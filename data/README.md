@@ -1,5 +1,15 @@
 # Data Preparation
 
+
+## Dataset Info
+
+| Dataset | metrics | Needle | Haystack  | License |
+|:-:|:-:|:-:|:-:|:-:|
+| [RULER][gitruler]    | `contains` | numbers, uuid, QAs| noise, essay | [Apache-2.0][gitrulerLCS] |
+| [NoLiMa][gitnolima]  | `EM`, `contains`,<br/> `lastline_EM`, `lastline_contains` | | | [Adobe Research][gitnolimaLCS] |
+
+`metric.contains` checks if the prediction is a substring of the ground truth.
+
 ## RULER
 
 ```sh
@@ -35,4 +45,16 @@ python prepare.py \
 
 ## NoLiMa
 
+Download via [Hugging Face][hfnolima]:
+
+```sh
+hf download --repo_type dataset amodaresi/NoLiMa --local_dir /path/to/local/folder
+```
+
 TODO.
+
+[gitruler]: https://github.com/NVIDIA/RULER
+[gitrulerLCS]: https://github.com/NVIDIA/RULER/blob/main/LICENSE
+[gitnolima]: https://github.com/Adobe-Research/NoLiMa
+[gitnolimaLCS]: https://github.com/Adobe-Research/NoLiMa/blob/main/LICENSE
+[hfnolima]: https://huggingface.co/datasets/amodaresi/NoLiMa
