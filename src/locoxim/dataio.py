@@ -32,8 +32,6 @@ def fill_placeholders(template: str, placeholder: str, value: str) -> str:
 
 def get_hash(
     config_or_data: dict[str, Any],
-    hash_cache_key: str = HASH_CACHE_KEY,
-    exclude_keys: list[str] = None,
     debug: bool = False,
 ) -> str:
     """
@@ -49,21 +47,14 @@ def get_hash(
         f"Expected dict, got {type(config_or_data)}"
     )
 
-    if hash_cache_key in config_or_data:
-        return config_or_data[hash_cache_key]
-
-    if exclude_keys is None:
-        exclude_keys = []
-    d = {k: v for k, v in config_or_data.items() if k not in exclude_keys}
-
     if debug:
-        for k, v in d.items():
+        for k, v in config_or_data.items():
             try:
                 json.dumps(v)
             except TypeError as e:
                 raise e
 
-    json_str = json.dumps(d, sort_keys=True)
+    json_str = json.dumps(config_or_data, sort_keys=True)
     hash_str = get_hash_str(json_str)
 
     return hash_str

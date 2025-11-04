@@ -61,7 +61,7 @@ class NeedleHaystackTester:
         self.model_args = model_args
         self.data_args = data_args
         self.run_args = run_args
-        self.render_args = render_args # optional, only for VLMs
+        self.render_args = render_args  # optional, only for VLMs
 
         self.api_connector = APIConnector(**args_to_dict(model_args))
         self.question_item = question_item
@@ -78,7 +78,7 @@ class NeedleHaystackTester:
 
     @property
     def results_dir(self) -> str:
-        return f"{self.run_args.parent_results_dir}/{get_hash(args_to_dict(self.data_args) | args_to_dict(self.model_args))}"
+        return f"{self.run_args.parent_results_dir}/{get_hash(args_to_dict(self.data_args) | args_to_dict(self.model_args) | args_to_dict(self.render_args))}"
 
     @property
     def log_placements(self) -> bool:
@@ -117,6 +117,7 @@ class NeedleHaystackTester:
             "model_args": args_to_dict(self.model_args),
             "data_args": args_to_dict(self.data_args),
             "run_args": args_to_dict(self.run_args),
+            "render_args": args_to_dict(self.render_args),
             "question_item": self.question_item.__dict__(),
             "system_prompt": self.api_connector.default_system_prompt
             if self.data_args.use_default_system_prompt
@@ -124,10 +125,7 @@ class NeedleHaystackTester:
             "haystack_hash": self.haystack.get_hash(),
         }
         # snapshot -> hash
-        outputs[HASH_CACHE_KEY] = get_hash(
-            outputs,
-            hash_cache_key=HASH_CACHE_KEY,
-        )
+        outputs[HASH_CACHE_KEY] = get_hash(outputs)
 
         outputs["eval_name"] = self.eval_name
         results_for_all_depths = []
@@ -155,12 +153,12 @@ class NeedleHaystackTester:
 
         async_tasks = []
         rng = np.random.RandomState(self.question_item.seed)
-        for i in np.linspace(
+        for depth_percentage in np.linspace(
             self.data_args.document_depth_percent_min,
             self.data_args.document_depth_percent_max,
             self.data_args.document_depth_num_tests,
         ):
-            needle_depth = i / 100
+            needle_depth = depth_percentage / 100
             api_output = {}
             needle = self.question_item.needle
             retrieval_question = self.question_item.retrieval_question
@@ -197,7 +195,13 @@ class NeedleHaystackTester:
                 distractor=self.question_item.distractor,
             )
 
-            filled_template = self.data_args.task_template.format(
+            task_template = (
+                self.data_args.task_template or self.question_item.task_template
+            )
+            assert isinstance(task_template, str), (
+                f"task_template is not str type{type(task_template)}"
+            )
+            filled_template = task_template.format(
                 haystack=placement_output["text"], question=retrieval_question
             )
 
@@ -223,7 +227,7 @@ class NeedleHaystackTester:
             if self.log_placements:
                 placement_log_path = os.path.join(
                     self.run_args.log_placements_dir,
-                    f"{self.eval_name}_{str(np.round(i, 3))}.txt",
+                    f"{self.eval_name}_{str(np.round(depth_percentage, 3))}.txt",
                 )
                 with open(placement_log_path, "w") as file:
                     file.write(placement_output["text"])
@@ -249,4 +253,4 @@ class NeedleHaystackTester:
         with open(results_path, "w") as file:
             json.dump(outputs, file, indent="\t")
 
-        print(f"Saved evaluation results to {results_path}")
+        return

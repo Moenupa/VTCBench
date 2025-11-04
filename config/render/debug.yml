@@ -8,10 +8,10 @@ marginTop: 20
 marginBottom: 20
 forceOnePage: false
 autoAdjustHeight: false
-savePDF: true
+savePDF: false
 saveImage: true
 dpi: 96
 overwrite: false
 extension: "jpeg"
-css: null
+css: "p {font-size: 9px;}"
 css_path: null
