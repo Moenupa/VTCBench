@@ -1,6 +1,5 @@
 # Data Preparation
 
-
 ## Dataset Info
 
 | Dataset | metrics | Needle | Haystack  | License |
@@ -48,7 +47,7 @@ python prepare.py \
 Download via [Hugging Face][hfnolima]:
 
 ```sh
-hf download --repo_type dataset amodaresi/NoLiMa --local_dir /path/to/local/folder
+hf download --repo-type dataset amodaresi/NoLiMa --local-dir /path/to/local/folder
 ```
 
 TODO.
