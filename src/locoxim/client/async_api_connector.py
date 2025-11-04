@@ -12,6 +12,8 @@ from typing import Union
 
 import httpx
 import tiktoken
+from deocr.engine.args import RenderArgs
+from deocr.engine.playwright.async_api import transform
 from google import genai
 from google.genai import types
 from google.genai.errors import ClientError
@@ -28,8 +30,6 @@ from tenacity import (
 )
 from transformers import AutoTokenizer
 from vertexai.preview.tokenization import get_tokenizer_for_model
-from deocr.engine.playwright.async_api import transform
-from deocr.engine.args import RenderArgs
 
 from .image_helper import ImageTextPayload
 
@@ -252,9 +252,7 @@ class APIConnector:
             for image in images:
                 payload.add_image_adaptive(image)
 
-            messages.append(
-                {"role": "user", "content": payload.to_message_content()}
-            )
+            messages.append({"role": "user", "content": payload.to_message_content()})
         elif isinstance(user_prompt, ImageTextPayload):
             messages.append(
                 {"role": "user", "content": user_prompt.to_message_content()}
