@@ -7,6 +7,8 @@ def args_to_dict(args) -> dict:
     """
     Convert dataclass arguments to a dictionary.
     """
+    if args is None:
+        return {}
     return {k: v for k, v in dict(args).items() if not k.startswith("_")}
 
 
@@ -89,9 +91,9 @@ class DataArgs:
         default="data/NoLiMa/haystack/rand_shuffle",
         metadata={"help": "Directory containing the haystack files"},
     )
-    task_template: str = field(
+    task_template: str | None = field(
         default=DEFAULT_TASK_TEMPLATE,
-        metadata={"help": "Task template name"},
+        metadata={"help": "Task template name overriding ones specified in needle set"},
     )
     use_default_system_prompt: bool = field(
         default=True,
@@ -109,7 +111,7 @@ class DataArgs:
         default=100,
         metadata={"help": "Maximum document depth percentage"},
     )
-    document_depth_num_tests: float = field(
+    document_depth_num_tests: int = field(
         default=35,
         metadata={"help": "Number of points between min and max depth"},
     )
@@ -125,7 +127,9 @@ class DataArgs:
     )
     pure_text: bool = field(
         default=True,
-        metadata={"help": "If true, use pure text as input to LLM/VLM. Otherwise, embed context in images."},
+        metadata={
+            "help": "If true, use pure text as input to LLM/VLM. Otherwise, embed context in images."
+        },
     )
 
 
