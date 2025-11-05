@@ -9,16 +9,16 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
+    "httpx",
     "google-cloud-aiplatform==1.74.0",
     "google-genai==0.3.0",
-    "httpx<0.28",
     "jsonargparse[signatures]>=4.35.0,<4.43.0",
     "langchain-aws==0.2.9",
     "langchain-core==0.3.26",
     "openai",
-    "tenacity==9.0.0",
+    "tenacity>=9.0.0",
     "tiktoken",
-    "transformers==4.46.1",
+    "transformers>=4.47.1,<=4.57.1,!=4.57.0,!=4.52.0",
     "sentencepiece",
     "deocr[playwright,pymupdf]",
 ]
