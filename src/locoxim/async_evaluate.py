@@ -57,6 +57,7 @@ class NeedleHaystackTester:
         render_args: RenderArgs | None,
         question_item: QuestionItem,
         haystack_path: str,
+        verbose: bool = False,
     ) -> None:
         self.model_args = model_args
         self.data_args = data_args
@@ -76,13 +77,11 @@ class NeedleHaystackTester:
             else f"{model_args.model}_book_{int(time.time())}"
         )
 
+        self.verbose = verbose
+
     @property
     def results_dir(self) -> str:
         return f"{self.run_args.parent_results_dir}/{get_hash(args_to_dict(self.data_args) | args_to_dict(self.model_args) | args_to_dict(self.render_args))}"
-
-    @property
-    def log_placements(self) -> bool:
-        return self.run_args.log_placements_dir != ""
 
     def _evaluate_response(self, response: str, gold_answers: list[str] = None) -> int:
         if gold_answers is None:
@@ -153,12 +152,13 @@ class NeedleHaystackTester:
 
         async_tasks = []
         rng = np.random.RandomState(self.question_item.seed)
-        for depth_percentage in np.linspace(
-            self.data_args.document_depth_percent_min,
-            self.data_args.document_depth_percent_max,
-            self.data_args.document_depth_num_tests,
+        for _needle_depth_i, _needle_depth_percentage in enumerate(
+            np.linspace(
+                self.data_args.document_depth_percent_min,
+                self.data_args.document_depth_percent_max,
+                self.data_args.document_depth_num_tests,
+            )
         ):
-            needle_depth = depth_percentage / 100
             api_output = {}
             needle = self.question_item.needle
             retrieval_question = self.question_item.retrieval_question
@@ -189,7 +189,7 @@ class NeedleHaystackTester:
                 encoding_func=self.api_connector.encode,
                 decoding_func=self.api_connector.decode,
                 context_length=self.data_args.context_length,
-                depth=needle_depth,
+                depth=_needle_depth_percentage / 100,
                 shift=self.data_args.shift,
                 static_depth=self.data_args.static_depth,
                 distractor=self.question_item.distractor,
@@ -218,6 +218,7 @@ class NeedleHaystackTester:
                         "top_p": self.model_args.top_p,
                         "top_k": self.model_args.top_k,
                     },
+                    verbose=self.verbose and (_needle_depth_i == 0),
                 )
             )
 
@@ -225,14 +226,18 @@ class NeedleHaystackTester:
                 k: v for k, v in placement_output.items() if k != "text"
             }
 
-            results_for_all_depths.append(api_output)
+            results_for_all_depths.append(
+                {
+                    "placement_metadata": {
+                        k: v for k, v in placement_output.items() if k != "text"
+                    },
+                    "gol": selected_character,
+                }
+            )
 
-            if self.log_placements:
-                placement_log_path = os.path.join(
-                    self.run_args.log_placements_dir,
-                    f"{self.eval_name}_{str(np.round(depth_percentage, 3))}.txt",
-                )
-                with open(placement_log_path, "w") as file:
+            if (log_dir := self.run_args.log_dir) is not None:
+                log_path = f"{log_dir}/{self.eval_name}_{str(np.round(_needle_depth_percentage, 3))}.txt"
+                with open(log_path, "w") as file:
                     file.write(placement_output["text"])
 
         loop = asyncio.get_event_loop()

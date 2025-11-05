@@ -113,7 +113,7 @@ class BookHaystack:
         )
 
         return {
-            "text": pre_haystack + " " + needle + "\n" + post_haystack,
+            "text": f"{pre_haystack} {needle}\n{post_haystack}",
             "static_depth": real_static_depth,
             "token_depth": int(np.round(context_length_wo_needle * depth)),
             "depth": depth,
@@ -129,10 +129,11 @@ class BookHaystack:
         context_length: int,
         shift: int = 0,
         depth: float = 0.5,
-        static_depth: float = -1,
+        static_depth: float = None,
         distractor: Union[str, None] = None,
         distractor_free_zone: float = 0.2,
     ) -> dict:
+        # no distractor, use needle
         if distractor is None:
             return self._generate_w_needle_placement(
                 needle,
@@ -144,7 +145,9 @@ class BookHaystack:
                 depth,
                 static_depth,
             )
-        elif static_depth == -1:
+
+        # use distractor placement
+        if static_depth is None:
             if distractor_free_zone < 0 or distractor_free_zone > 0.25:
                 raise ValueError("Distractor free zone should be between 0 and 0.25")
 
@@ -223,5 +226,5 @@ class BookHaystack:
             )
             placement_w_needle["distractor_depth"] = dist_depth
             return placement_w_needle
-        else:
-            ValueError("Static depth is not supported with distractor")
+
+        raise ValueError("Distractor with static depth is not supported")

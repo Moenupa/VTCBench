@@ -1,4 +1,5 @@
 from dataclasses import dataclass, field
+from typing import Optional
 
 DEFAULT_TASK_TEMPLATE = "You will answer a question based on the following book snippet:\n\n{haystack}\n\nUse the information provided in the book snippet to answer the question. Your answer should be short and based on either explicitly stated facts or strong, logical inferences.\n\nQuestion: {question}\n\n Return only the final answer with no additional explanation or reasoning."
 
@@ -42,19 +43,19 @@ class ModelArgs:
         metadata={"help": "Maximum tokens to generate"},
     )
     # optional arguments for generation
-    temperature: float = field(
+    temperature: Optional[float] = field(
         default=None,
         metadata={"help": "Temperature for generation"},
     )
-    top_p: float = field(
+    top_p: Optional[float] = field(
         default=None,
         metadata={"help": "Top-p sampling parameter"},
     )
-    top_k: int = field(
+    top_k: Optional[int] = field(
         default=None,
         metadata={"help": "Top-k sampling parameter"},
     )
-    system_prompt: str = field(
+    system_prompt: Optional[str] = field(
         default="You are a helpful assistant.",
         metadata={"help": "Default system prompt for the model"},
     )
@@ -70,11 +71,11 @@ class ModelArgs:
     )
 
     # computing tokens to figure out compression ratio
-    tokenizer_type: str = field(
+    tokenizer_type: Optional[str] = field(
         default="huggingface",
         metadata={"help": "Type of tokenizer to use"},
     )
-    tokenizer_model: str = field(
+    tokenizer_model: Optional[str] = field(
         default=None,
         metadata={
             "help": "Model path or local dir path, e.g. Qwen/Qwen2.5-VL-7B-Instruct."
@@ -96,7 +97,7 @@ class DataArgs:
         default="data/NoLiMa/haystack/rand_shuffle",
         metadata={"help": "Directory containing the haystack files"},
     )
-    task_template: str | None = field(
+    task_template: Optional[str] = field(
         default=DEFAULT_TASK_TEMPLATE,
         metadata={"help": "Task template name overriding ones specified in needle set"},
     )
@@ -148,10 +149,10 @@ class RunArgs:
         default="EM",
         metadata={"help": "Evaluation metric"},
     )
-    log_placements_dir: str = field(
-        default="",
+    log_dir: Optional[str] = field(
+        default=None,
         metadata={
-            "help": "Directory to save needle placement logs. If empty, no logs are saved."
+            "help": "Log directory to save intermediate output. If None, no logs are saved."
         },
     )
     parent_results_dir: str = field(
