@@ -3,6 +3,8 @@ from io import BytesIO
 
 from PIL import Image as PILImage
 
+from ..defaults import PIL_SAVE_FORMAT, PIL_SAVE_KWARGS
+
 
 class ImageTextPayload:
     # for the "content" field in chat messages, but only for image data
@@ -48,7 +50,9 @@ def image_path_to_data_url(image_path: str, ext: str = None) -> str:
         return image_bytes_to_data_url(image_file.read(), ext)
 
 
-def image_object_to_data_url(image_object: PILImage.Image, ext: str = "jpeg") -> str:
+def image_object_to_data_url(
+    image_object: PILImage.Image, ext: str = PIL_SAVE_FORMAT
+) -> str:
     """Convert an image object to a data URL.
 
     Args:
@@ -62,8 +66,9 @@ def image_object_to_data_url(image_object: PILImage.Image, ext: str = "jpeg") ->
     if ext == "jpg":
         ext = "jpeg"
 
+    kwargs = PIL_SAVE_KWARGS.get(ext.lower(), {})
     with BytesIO() as buffered:
-        image_object.save(buffered, format=ext.upper())
+        image_object.save(buffered, format=ext.upper(), **kwargs)
         bs = buffered.getvalue()
     return image_bytes_to_data_url(bs, ext)
 
