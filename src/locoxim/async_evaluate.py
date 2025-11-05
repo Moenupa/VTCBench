@@ -111,7 +111,7 @@ class NeedleHaystackTester:
             case _:
                 raise ValueError(f"Invalid metric: {self.run_args.metric}")
 
-    def evaluate(self) -> None:
+    def evaluate(self) -> str:
         outputs = {
             "model_args": args_to_dict(self.model_args),
             "data_args": args_to_dict(self.data_args),
@@ -132,7 +132,7 @@ class NeedleHaystackTester:
         results_path = f"{self.results_dir}/{self.eval_name}.json"
         if osp.exists(results_path):
             print(f"{results_path} exists, skipped.")
-            return
+            return results_path
 
         # scan all existing results
         # WARN: this could cause a lot of IO traffic
@@ -148,7 +148,7 @@ class NeedleHaystackTester:
                 print(
                     f"Duplicate: {match}, {target_hash}, skipped.",
                 )
-                return
+                return match
 
         async_tasks = []
         rng = np.random.RandomState(self.question_item.seed)
@@ -159,7 +159,6 @@ class NeedleHaystackTester:
                 self.data_args.document_depth_num_tests,
             )
         ):
-            api_output = {}
             needle = self.question_item.needle
             retrieval_question = self.question_item.retrieval_question
             if "{CHAR}" in needle:
@@ -173,7 +172,6 @@ class NeedleHaystackTester:
                 self.question_item.gold_answers = [selected_character]
             else:
                 selected_character = None
-            api_output["selected_character"] = selected_character
 
             if has_placeholder(retrieval_question):
                 assert selected_character is not None, (
@@ -216,22 +214,17 @@ class NeedleHaystackTester:
                     generation_kwargs={
                         "temperature": self.model_args.temperature,
                         "top_p": self.model_args.top_p,
-                        "top_k": self.model_args.top_k,
                     },
                     verbose=self.verbose and (_needle_depth_i == 0),
                 )
             )
-
-            api_output["placement_metadata"] = {
-                k: v for k, v in placement_output.items() if k != "text"
-            }
 
             results_for_all_depths.append(
                 {
                     "placement_metadata": {
                         k: v for k, v in placement_output.items() if k != "text"
                     },
-                    "gol": selected_character,
+                    "gold_answers": self.question_item.gold_answers,
                 }
             )
 
@@ -247,7 +240,7 @@ class NeedleHaystackTester:
             results_for_all_depths[i]["metric"] = (
                 self._evaluate_response(
                     responses[i]["response"],
-                    gold_answers=[results_for_all_depths[i]["selected_character"]],
+                    gold_answers=results_for_all_depths[i]["gold_answers"],
                 )
                 if has_placeholder(self.question_item.needle)
                 else self._evaluate_response(responses[i]["response"])
@@ -261,4 +254,4 @@ class NeedleHaystackTester:
         with open(results_path, "w") as file:
             json.dump(outputs, file, indent="\t")
 
-        return
+        return results_path

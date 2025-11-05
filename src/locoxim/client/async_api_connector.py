@@ -9,7 +9,7 @@
 
 from functools import cache
 from pprint import pprint
-from typing import TYPE_CHECKING, Union
+from typing import TYPE_CHECKING, Optional, Union
 
 import httpx
 import tiktoken
@@ -206,8 +206,8 @@ class APIConnector:
         max_tokens: int = 100,
         use_default_system_prompt: bool = True,
         pure_text: bool = True,
-        generation_kwargs: dict | None = None,
-        render_args: "RenderArgs" | None = None,
+        generation_kwargs: Optional[dict] = None,
+        render_args: Optional["RenderArgs"] = None,
         verbose: bool = False,
     ) -> dict:
         """
@@ -302,8 +302,15 @@ class APIConnector:
                     params["max_tokens"] = max_tokens
                     params = params | (generation_kwargs or {})
 
-                completion = await self.api.chat.completions.create(**params)
-                return completion
+                try:
+                    completion = await self.api.chat.completions.create(**params)
+                    return completion
+                except Exception as e:
+                    print("=== API Call Exception ===")
+                    pprint(params)
+                    pprint(messages)
+                    print("--------------------------")
+                    raise e
 
             completion = await generate_content()
 

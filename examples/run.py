@@ -58,9 +58,12 @@ def run_test(
         # increment base seed for every different haystack
         run_args.base_seed = run_args.base_seed + 100
 
-    for task in tqdm(tasks):
-        tester = NeedleHaystackTester(**task)
-        tester.evaluate()
+    with tqdm(total=len(tasks)) as pbar:
+        for task in tasks:
+            tester = NeedleHaystackTester(**task, verbose=(pbar.n == 0))
+            result = tester.evaluate()
+            pbar.set_postfix(result=result)
+            pbar.update()
 
 
 if __name__ == "__main__":
