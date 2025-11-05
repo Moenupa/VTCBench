@@ -1,8 +1,6 @@
 from dataclasses import dataclass, field
 from typing import Optional
 
-DEFAULT_TASK_TEMPLATE = "You will answer a question based on the following book snippet:\n\n{haystack}\n\nUse the information provided in the book snippet to answer the question. Your answer should be short and based on either explicitly stated facts or strong, logical inferences.\n\nQuestion: {question}\n\n Return only the final answer with no additional explanation or reasoning."
-
 
 def args_to_dict(args) -> dict:
     """
@@ -51,10 +49,6 @@ class ModelArgs:
         default=None,
         metadata={"help": "Top-p sampling parameter"},
     )
-    top_k: Optional[int] = field(
-        default=None,
-        metadata={"help": "Top-k sampling parameter"},
-    )
     system_prompt: Optional[str] = field(
         default="You are a helpful assistant.",
         metadata={"help": "Default system prompt for the model"},
@@ -98,7 +92,7 @@ class DataArgs:
         metadata={"help": "Directory containing the haystack files"},
     )
     task_template: Optional[str] = field(
-        default=DEFAULT_TASK_TEMPLATE,
+        default=None,
         metadata={"help": "Task template name overriding ones specified in needle set"},
     )
     use_default_system_prompt: bool = field(

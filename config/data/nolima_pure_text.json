@@ -1,0 +1,13 @@
+{
+  "needle_set_path": "data/NoLiMa/needlesets/needle_set.json",
+  "haystack_dir": "data/NoLiMa/haystack/rand_shuffle",
+  "task_template": "You will answer a question based on the following book snippet:\n\n{haystack}\n\nUse the information provided in the book snippet to answer the question. Your answer should be short and based on either explicitly stated facts or strong, logical inferences.\n\nQuestion: {question}\n\n Return only the final answer with no additional explanation or reasoning.",
+  "use_default_system_prompt": true,
+  "context_length": 1000,
+  "document_depth_percent_min": 0,
+  "document_depth_percent_max": 100,
+  "document_depth_num_tests": 35,
+  "shift": 0,
+  "static_depth": null,
+  "pure_text": false
+}
