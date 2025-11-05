@@ -41,16 +41,21 @@ class ModelArgs:
         default=192,
         metadata={"help": "Maximum tokens to generate"},
     )
+    # optional arguments for generation
     temperature: float = field(
-        default=0.0,
+        default=None,
         metadata={"help": "Temperature for generation"},
     )
     top_p: float = field(
-        default=1.0,
+        default=None,
         metadata={"help": "Top-p sampling parameter"},
     )
+    top_k: int = field(
+        default=None,
+        metadata={"help": "Top-k sampling parameter"},
+    )
     system_prompt: str = field(
-        default="You are a helpful assistant",
+        default="You are a helpful assistant.",
         metadata={"help": "Default system prompt for the model"},
     )
 

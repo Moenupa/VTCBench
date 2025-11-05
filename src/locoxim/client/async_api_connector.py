@@ -201,10 +201,9 @@ class APIConnector:
         system_prompt: str,
         user_prompt: Union[str, ImageTextPayload],
         max_tokens: int = 100,
-        temperature: float = 0.0,
-        top_p: float = 1.0,
         use_default_system_prompt: bool = True,
         pure_text: bool = True,
+        generation_kwargs: dict | None = None,
         render_args: RenderArgs | None = None,
     ) -> dict:
         """
@@ -276,11 +275,11 @@ class APIConnector:
             async def generate_content() -> "ChatCompletion":
                 params = {"model": self.model, "messages": messages, "seed": 43}
                 if self.model_config.get("openai_thinking_model", False):
+                    # thinking models, e.g. GPT-5 use another set of params
                     params["max_completion_tokens"] = max_tokens
                 else:
                     params["max_tokens"] = max_tokens
-                    params["temperature"] = temperature
-                    params["top_p"] = top_p
+                    params = params | (generation_kwargs or {})
 
                 completion = await self.api.chat.completions.create(**params)
                 return completion
@@ -322,8 +321,7 @@ class APIConnector:
                     contents=messages[-1]["content"],
                     config=types.GenerateContentConfig(
                         system_instruction=self.default_system_prompt,
-                        temperature=temperature,
-                        top_p=top_p,
+                        **(generation_kwargs or {}),
                         max_output_tokens=max_tokens,
                         thinking_config=types.ThinkingConfig(
                             thinking_budget=self.model_config["thinking_budget"]

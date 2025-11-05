@@ -210,11 +210,14 @@ class NeedleHaystackTester:
                     system_prompt=self.model_args.system_prompt,
                     user_prompt=filled_template,
                     max_tokens=self.model_args.max_tokens,
-                    temperature=self.model_args.temperature,
-                    top_p=self.model_args.top_p,
                     use_default_system_prompt=self.data_args.use_default_system_prompt,
                     pure_text=self.data_args.pure_text,
                     render_args=self.render_args,
+                    generation_kwargs={
+                        "temperature": self.model_args.temperature,
+                        "top_p": self.model_args.top_p,
+                        "top_k": self.model_args.top_k,
+                    }
                 )
             )
 
