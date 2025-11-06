@@ -6,6 +6,7 @@
 |:-:|:-:|:-:|:-:|:-:|
 | [RULER][gitruler]    | `contains` | numbers, uuid, QAs| noise, essay | [Apache-2.0][gitrulerLCS] |
 | [NoLiMa][gitnolima]  | `EM`, `contains`,<br/> `lastline_EM`, `lastline_contains` | QAs | book | [Adobe Research][gitnolimaLCS] |
+| [LoCoMo][gitlocomo]  | `EM`, `ROUGE` | - | conversation | [CC BY-NC 4.0][gitlocomoLCS] |
 
 `metric.contains` checks if the prediction is a substring of the ground truth.
 
@@ -60,8 +61,18 @@ Modify config file path accordingly: [config/data/nolima.json](../config/data/no
 }
 ```
 
+## LoCoMo
+
+Download from [Github](https://github.com/snap-research/locomo)
+
+```sh
+wget https://github.com/snap-research/locomo/blob/main/data/locomo10.json
+```
+
 [gitruler]: https://github.com/NVIDIA/RULER
 [gitrulerLCS]: https://github.com/NVIDIA/RULER/blob/main/LICENSE
 [gitnolima]: https://github.com/Adobe-Research/NoLiMa
 [gitnolimaLCS]: https://github.com/Adobe-Research/NoLiMa/blob/main/LICENSE
 [hfnolima]: https://huggingface.co/datasets/amodaresi/NoLiMa
+[gitlocomo]: https://github.com/snap-research/locomo
+[gitlocomoLCS]: https://github.com/snap-research/locomo/blob/main/LICENSE.txt
