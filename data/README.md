@@ -5,7 +5,7 @@
 | Dataset | metrics | Needle | Haystack  | License |
 |:-:|:-:|:-:|:-:|:-:|
 | [RULER][gitruler]    | `contains` | numbers, uuid, QAs| noise, essay | [Apache-2.0][gitrulerLCS] |
-| [NoLiMa][gitnolima]  | `EM`, `contains`,<br/> `lastline_EM`, `lastline_contains` | | | [Adobe Research][gitnolimaLCS] |
+| [NoLiMa][gitnolima]  | `EM`, `contains`,<br/> `lastline_EM`, `lastline_contains` | QAs | book | [Adobe Research][gitnolimaLCS] |
 
 `metric.contains` checks if the prediction is a substring of the ground truth.
 
@@ -50,7 +50,15 @@ Download via [Hugging Face][hfnolima]:
 hf download --repo-type dataset amodaresi/NoLiMa --local-dir /path/to/local/folder
 ```
 
-TODO.
+Modify config file path accordingly: [config/data/nolima.json](../config/data/nolima.json).
+
+```json
+{
+  "needle_set_path": "data/NoLiMa/needlesets/needle_set.json",
+  "haystack_dir": "data/NoLiMa/haystack/rand_shuffle",
+  "...": "..."
+}
+```
 
 [gitruler]: https://github.com/NVIDIA/RULER
 [gitrulerLCS]: https://github.com/NVIDIA/RULER/blob/main/LICENSE
