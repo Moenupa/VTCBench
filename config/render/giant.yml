@@ -14,6 +14,8 @@ dpi: 96
 overwrite: false
 save_format: "jpeg"
 save_kwargs:
-  quality: 50
+  quality: 75
+  optimize: true
+  subsampling: 2
 css: "p {font-size: 12px;}"
 css_path: null
