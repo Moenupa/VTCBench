@@ -1,0 +1,19 @@
+# default arguments yml
+pagesize:
+  - 1792
+  - 1792
+marginLeft: 0
+marginRight: 0
+marginTop: 0
+marginBottom: 0
+forceOnePage: false
+autoAdjustHeight: false
+savePDF: false
+saveImage: false
+dpi: 96
+overwrite: false
+save_format: "jpeg"
+save_kwargs:
+  quality: 75
+css: "p {font-size: 12px;}"
+css_path: null
