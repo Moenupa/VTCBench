@@ -1,0 +1,12 @@
+{
+	"model": "gpt-5",
+	"api_key": "EMPTY",
+	"api_url": "https://localhost:8001/v1",
+	"api_provider": "openai",
+	"max_tokens": 192,
+	"temperature": 0.000001,
+	"timeout": 30,
+	"max_retries": 3,
+	"tokenizer_type": "tiktoken",
+	"tokenizer_model": "gpt-5"
+}

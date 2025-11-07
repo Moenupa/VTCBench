@@ -89,7 +89,7 @@ class APIConnector:
                 self.tokenizer_model, use_fast=True
             )
         elif self.tokenizer_type == "tiktoken":
-            self.tokenizer = tiktoken.get_encoding(self.tokenizer_model)
+            self.tokenizer = tiktoken.encoding_for_model(self.tokenizer_model)
         elif self.tokenizer_type == "google":
             self.tokenizer = get_tokenizer_for_model(self.tokenizer_model)
 
