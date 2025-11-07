@@ -20,8 +20,9 @@ dependencies = [
     "tiktoken",
     "transformers>=4.47.1,<=4.57.1,!=4.57.0,!=4.52.0",
     "sentencepiece",
-    "deocr[playwright,pymupdf]",
+    "deocr[playwright,pymupdf]>=0.3.0",
 ]
 
-[tool.uv.sources]
-deocr = { path = "../DeOCR", editable = true }
+# for local development
+# [tool.uv.sources]
+# deocr = { path = "../DeOCR", editable = true }
