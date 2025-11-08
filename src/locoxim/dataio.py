@@ -121,13 +121,14 @@ def iter_question_items(
                 distractor_template=get_distractor_template(
                     test_config, question_batch_type
                 ),
+                context=test_config.context,
             )
 
 
 @dataclass
 class NeedleTestConfig:
     """
-    A test, i.e. a dict in json file containing M*N (question, args) combinations
+    A test set, i.e. a dict in json file containing M*N (question, args) combinations
 
     Args:
         id (str): Unique ID for the test.
@@ -151,6 +152,7 @@ class NeedleTestConfig:
     # tests: {"test_id": {"input_args": [...]}}
     tests: dict[str, dict[str, list]]
     distractors: dict[str, str] | None = None
+    context: str | None = None
 
 
 @dataclass
@@ -179,6 +181,7 @@ class QuestionItem:
     gold_answers: Optional[list[str]]
     character_set: Optional[list[str]]
     distractor: Optional[str]
+    context: Optional[str]
 
     seed: int
 

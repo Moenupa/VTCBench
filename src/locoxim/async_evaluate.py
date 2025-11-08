@@ -181,6 +181,7 @@ def evaluate(
             shift=data_args.shift,
             static_depth=data_args.static_depth,
             distractor=question_item.distractor,
+            context=question_item.context,
         )
 
         task_template = data_args.task_template or question_item.task_template

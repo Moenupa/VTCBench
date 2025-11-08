@@ -15,8 +15,13 @@ from ..token_counter import TokenCounter
 
 
 class BookHaystack:
-    def __init__(self, book_path: str) -> None:
+    def __init__(self, book_path: str | None) -> None:
         self.book_path = book_path
+        self.text_encoded = None
+
+        if book_path is None:
+            self.text = ""
+            return
 
         if not os.path.exists(book_path):
             raise FileNotFoundError(f"Book path {book_path} does not exist")
@@ -27,9 +32,7 @@ class BookHaystack:
         else:
             raise ValueError(f"Book path {book_path} is not supported")
 
-        self.text_encoded = None
-
-    def get_hash(self):
+    def get_hash(self) -> str:
         return hashlib.sha256(self.text.encode()).hexdigest()
 
     def _generate_w_needle_placement(
@@ -130,13 +133,16 @@ class BookHaystack:
         static_depth: float = None,
         distractor: Union[str, None] = None,
         distractor_free_zone: float = 0.2,
+        context: str | None = None,
     ) -> dict:
         # dont need needle placement
         if needle is None:
+            # context from needle config, use it directly and ignore self.text
+            assert context is not None
             if self.token_depth is None:
-                self.token_depth = token_counter.token_count(self.text)
+                self.token_depth = token_counter.token_count(context)
             return {
-                "text": self.text,
+                "text": context,
                 "static_depth": None,
                 "token_depth": self.token_depth,
                 "depth": None,
