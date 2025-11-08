@@ -21,6 +21,7 @@ from tenacity import (
     wait_random,
 )
 
+from ..dataio import api_cache_io, api_cache_path
 from ..token_counter import TokenCounter
 from .image_helper import ImageTextPayload
 
@@ -192,6 +193,7 @@ class APIConnector:
         assert user_prompt_content is not None, "user_prompt_content is None"
         messages.append({"role": "user", "content": user_prompt_content})
 
+        # messages now ready for API call
         if verbose:
             print("=== Raw User Prompt ===")
             pprint(user_prompt)
@@ -199,6 +201,14 @@ class APIConnector:
             print("=== API Call Messages ===")
             pprint(messages)
             print("=========================")
+
+        cache_path = api_cache_path(messages)
+        if (response := api_cache_io(cache_path)) is not None:
+            if verbose:
+                print("=== API Call Cached Response ===")
+                pprint(response)
+                print("===============================")
+            return response
 
         # call API with retries
         if (
@@ -258,6 +268,7 @@ class APIConnector:
                 "cached_tokens": completion.usage.prompt_tokens_details.cached_tokens
                 if completion.usage.prompt_tokens_details
                 else None,
+                "api_cache_path": cache_path,
             }
             if self.model_config.get("openai_thinking_model", False):
                 output["reasoning_tokens"] = (
@@ -290,6 +301,7 @@ class APIConnector:
                 "completion_tokens": completion.usage_metadata["output_tokens"],
                 "total_tokens": completion.usage_metadata["total_tokens"],
                 "finish_reason": completion.response_metadata["stopReason"],
+                "api_cache_path": cache_path,
             }
         else:
             raise ValueError(f"Invalid API provider: {self.api_provider}")

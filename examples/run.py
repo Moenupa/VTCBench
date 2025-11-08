@@ -1,4 +1,5 @@
 import json
+import os
 from copy import deepcopy
 from glob import iglob
 
@@ -9,7 +10,7 @@ from tqdm.contrib.concurrent import process_map
 
 from locoxim.args import DataArgs, ModelArgs, RunArgs
 from locoxim.async_evaluate import evaluate
-from locoxim.dataio import NeedleTestConfig, iter_question_items
+from locoxim.dataio import API_CACHE_DIR, NeedleTestConfig, iter_question_items
 
 
 def _worker(kwargs):
@@ -27,6 +28,7 @@ def run_test(
         experiment_config: list[NeedleTestConfig] = [
             NeedleTestConfig(**e) for e in _raw_dict
         ]
+    os.makedirs(API_CACHE_DIR, exist_ok=True)
 
     # an experiment is a json, containing multiple tests, with a test_id and its args
     questions = [

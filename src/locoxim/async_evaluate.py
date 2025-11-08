@@ -27,6 +27,7 @@ from .client.async_api_connector import APIConnector
 from .dataio import (
     HASH_CACHE_KEY,
     QuestionItem,
+    api_cache_io,
     dataclass_to_dict,
     fill_placeholders,
     get_hash,
@@ -115,7 +116,7 @@ def evaluate(
     outputs[HASH_CACHE_KEY] = get_hash(outputs)
 
     outputs["eval_name"] = eval_name
-    results_for_all_depths = []
+    results_for_all_depths: list[dict] = []
 
     results_path = f"{results_dir}/{eval_name}.json"
     if osp.exists(results_path):
@@ -225,14 +226,14 @@ def evaluate(
     loop = asyncio.get_event_loop()
     responses: list[dict] = loop.run_until_complete(asyncio.gather(*async_tasks))
 
-    for i in range(len(responses)):
-        results_for_all_depths[i]["metric"] = _evaluate_response(
-            responses[i]["response"],
-            gold_answers=results_for_all_depths[i]["gold_answers"],
+    for _res_i, _res in enumerate(responses):
+        results_for_all_depths[_res_i]["metric"] = _evaluate_response(
+            _res["response"],
+            gold_answers=results_for_all_depths[_res_i]["gold_answers"],
             metric=run_args.metric,
         )
-        for k, v in responses[i].items():
-            results_for_all_depths[i][k] = v
+        results_for_all_depths[_res_i] = results_for_all_depths[_res_i] | _res
+        api_cache_io(_res["api_cache_path"], save_response=_res)
 
     outputs["results"] = results_for_all_depths
     outputs["result_path"] = results_path

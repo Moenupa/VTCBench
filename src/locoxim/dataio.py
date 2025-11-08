@@ -1,10 +1,13 @@
 import json
+import os.path as osp
+import pickle as pkl
 from dataclasses import dataclass, is_dataclass
 from functools import cache
 from hashlib import sha256
 from typing import Any, Generator, Optional
 
 HASH_CACHE_KEY = "hash_sha256"
+API_CACHE_DIR = ".cache/api_calls"
 
 
 def dataclass_to_dict(instance) -> dict:
@@ -63,22 +66,27 @@ def get_hash_str(input_str: str) -> str:
     return sha256(input_str.encode("utf-8")).hexdigest()
 
 
-def _try_parse(text: str | None) -> list[str] | None:
-    if text is None:
-        return None
+def api_cache_path(messages: list[dict[str, str | dict]]) -> str:
+    msg_str = json.dumps(messages, sort_keys=True)
+    msg_hash = get_hash_str(msg_str)
+    return f"{API_CACHE_DIR}/{msg_hash}.pkl"
 
-    # not a string then assume it is parsed already
-    if not isinstance(text, str):
-        return text
 
-    # try to parse as list
-    try:
-        parsed: list[str] = json.loads(text)
-        return parsed
+def api_cache_io(
+    cache_path: str,
+    save_response: dict = None,
+) -> dict | None:
+    # need to work with async functions
+    if osp.exists(cache_path):
+        with open(cache_path, "rb") as file:
+            response: dict = pkl.load(file)
+            return response
+    elif save_response is not None:
+        # no existing cache, and saving enabled
+        with open(cache_path, "wb") as file:
+            pkl.dump(save_response, file)
 
-    # if not JSON-decodable, return as single-item list
-    except json.JSONDecodeError:
-        return [text]
+    return None
 
 
 def get_distractor_template(
@@ -213,6 +221,9 @@ class QuestionItem:
             gold_answers=gold_answers,
             character_set=character_set,
             distractor=distractor_template,
-            seed=(base_seed + hash(f'{test_id}_{question_batch_id}_{question_batch_type}')) % (2**32),
+            seed=(
+                base_seed + hash(f"{test_id}_{question_batch_id}_{question_batch_type}")
+            )
+            % (2**32),
         )
         return new_item
