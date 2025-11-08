@@ -61,7 +61,7 @@ def image_path_to_data_url(image_path: str) -> str:
 
 
 def image_object_to_data_url(
-    image_object: PILImage.Image, save_format: str, save_kwargs: dict = None
+    image_object: PILImage.Image, save_format: str | None, save_kwargs: dict = None
 ) -> str:
     """Convert an image object to a data URL.
 
@@ -73,7 +73,7 @@ def image_object_to_data_url(
         str: data‑URL string, e.g. "data:<mime>;base64,<payload>"
     """
     # special case for jpg -> pillow's jpeg
-    if save_format == "jpg":
+    if save_format == "jpg" or save_format is None:
         save_format = "jpeg"
 
     with BytesIO() as buffered:
@@ -116,8 +116,8 @@ def adaptive_image_to_data_url(
         assert save_format is not None
         return image_bytes_to_data_url(image, save_format)
     elif isinstance(image, str):
-        # ext optional, prefer to be infered from file ext
-        return image_path_to_data_url(image, save_format)
+        # use path for file extension
+        return image_path_to_data_url(image)
     elif isinstance(image, PILImage.Image):
         # no ext needed, default to jpeg
         return image_object_to_data_url(image, save_format, save_kwargs)

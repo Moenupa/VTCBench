@@ -52,8 +52,6 @@ def run_test(
                     "haystack_path": haystack_path,
                 }
             )
-        # increment base seed for every different haystack
-        run_args.base_seed = run_args.base_seed + 100
 
     if run_args.num_workers <= 1:
         with tqdm(total=len(tasks)) as pbar:

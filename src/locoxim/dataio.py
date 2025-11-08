@@ -2,7 +2,7 @@ import json
 from dataclasses import dataclass, is_dataclass
 from functools import cache
 from hashlib import sha256
-from typing import Any, Generator
+from typing import Any, Generator, Optional
 
 HASH_CACHE_KEY = "hash_sha256"
 
@@ -118,14 +118,15 @@ class NeedleTestConfig:
     A test, i.e. a dict in json file containing M*N (question, args) combinations
 
     Args:
-        id (str): Unique test ID
-        reasoning_type (str): Ability tested (e.g., world knowledge)
-        system_prompt (str): System prompt override
-        task_template (str): Task template, to be filled by haystack (w. needle) and question
-        needle (str): Needle template
-        questions (dict[str, str]): Mapping of question difficulty to question templates
-        character_set (list[str]): List of characters for needle placement
-        tests (dict[str, dict[str, list]]): Mapping of question IDs to their configs
+        id (str): Unique ID for the test.
+        reasoning_type (str): Type of reasoning ability being tested (e.g., world knowledge).
+        system_prompt (str | None): Optional system prompt override.
+        task_template (str): Template for the task, filled with needle and question.
+        needle (str): Template for the needle.
+        questions (dict[str, str]): Mapping from question type/difficulty to question templates, e.g. one-hop, two-hop.
+        character_set (list[str] | None): List of characters for needle placement.
+        tests (dict[str, dict[str, list]]): Mapping from question IDs to their configurations.
+        distractors (dict[str, str] | None): Optional mapping from distractor keys to templates.
     """
 
     id: str
@@ -146,26 +147,26 @@ class QuestionItem:
     A single question item, directly used for evaluation
 
     Args:
-        question_id (str): Unique ID for the question
-        system_prompt (str): System prompt for the model
-        task_template (str): Task template for the question
-        needle (str): Needle string with placeholders filled
-        retrieval_question (str): Question string with placeholders filled
-        gold_answers (str): Correct answers for evaluation
-        character_set (str): Character set for needle placement
-        distractor (str | None): Distractor string with placeholders filled, if any
-        seed (int): Seed for random operations
+        question_id (str): Unique ID for the question.
+        system_prompt (Optional[str]): System prompt for the model.
+        task_template (str): Task template for the question.
+        needle (Optional[str]): Needle string to fill in haystack; None if no needle placement.
+        retrieval_question (str): Question string with placeholders filled.
+        gold_answers (Optional[list[str]]): Correct answers for evaluation.
+        character_set (Optional[list[str]]): Character set for needle placement.
+        distractor (Optional[str]): Distractor string with placeholders filled, if any.
+        seed (Optional[int]): Seed for random operations.
     """
 
     question_id: str
-    system_prompt: str | None
+    system_prompt: Optional[str]
     task_template: str
 
-    needle: str
+    needle: Optional[str]
     retrieval_question: str
-    gold_answers: list[str] | None
-    character_set: list[str] | None
-    distractor: str | None
+    gold_answers: Optional[list[str]]
+    character_set: Optional[list[str]]
+    distractor: Optional[str]
 
     seed: int
 
@@ -181,10 +182,10 @@ class QuestionItem:
         question_batch_template: str,
         question_batch_args: list[str],
         needle_template: str,
-        gold_answers: list[str] | None,
+        gold_answers: Optional[list[str]],
         base_seed: int,
-        character_set: list[str] | None = None,
-        distractor_template: str | None = None,
+        character_set: Optional[list[str]] = None,
+        distractor_template: Optional[str] = None,
     ) -> "QuestionItem":
         # fill in the placeholders, taking question_args one by one
         for argc, argv in enumerate(question_batch_args):
@@ -208,6 +209,6 @@ class QuestionItem:
             gold_answers=gold_answers,
             character_set=character_set,
             distractor=distractor_template,
-            seed=base_seed + int(test_id[:4]),
+            seed=(base_seed + hash(f'{test_id}_{question_batch_id}_{question_batch_type}')) % (2**32),
         )
         return new_item
