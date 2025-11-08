@@ -4,18 +4,16 @@ from glob import iglob
 
 from deocr.engine.playwright.async_api import RenderArgs
 from jsonargparse import ArgumentParser
-
-# from tqdm.contrib.concurrent import process_map
 from tqdm import tqdm
+from tqdm.contrib.concurrent import process_map
 
 from locoxim.args import DataArgs, ModelArgs, RunArgs
-from locoxim.async_evaluate import NeedleHaystackTester
-from locoxim.dataio import NeedleTestConfig
+from locoxim.async_evaluate import evaluate
+from locoxim.dataio import NeedleTestConfig, iter_question_items
 
 
 def _worker(kwargs):
-    tester = NeedleHaystackTester(**kwargs)
-    tester.evaluate()
+    evaluate(**kwargs)
 
 
 def run_test(
@@ -34,7 +32,8 @@ def run_test(
     questions = [
         question
         for test_config in experiment_config
-        for question in test_config.iter_question_items(
+        for question in iter_question_items(
+            test_config,
             base_seed=run_args.base_seed,
         )
     ]
@@ -56,12 +55,19 @@ def run_test(
         # increment base seed for every different haystack
         run_args.base_seed = run_args.base_seed + 100
 
-    with tqdm(total=len(tasks)) as pbar:
-        for task in tasks:
-            tester = NeedleHaystackTester(**task, verbose=(pbar.n == 0))
-            result = tester.evaluate()
-            pbar.set_postfix(result=result)
-            pbar.update()
+    if run_args.num_workers <= 1:
+        with tqdm(total=len(tasks)) as pbar:
+            for task in tasks:
+                result = evaluate(**task, verbose=(pbar.n == 0))
+                pbar.set_postfix(result=result)
+                pbar.update()
+    else:
+        process_map(
+            _worker,
+            tasks,
+            max_workers=run_args.num_workers,
+            chunksize=1,
+        )
 
 
 if __name__ == "__main__":

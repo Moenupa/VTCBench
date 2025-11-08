@@ -169,3 +169,7 @@ class RunArgs:
             "help": "Prevent duplicate tests in the evaluation by scanning other parallel results. Warning: this slows down evaluation significantly."
         },
     )
+    num_workers: int = field(
+        default=1,
+        metadata={"help": "Number of parallel workers for evaluation"},
+    )

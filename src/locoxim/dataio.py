@@ -8,17 +8,11 @@ HASH_CACHE_KEY = "hash_sha256"
 
 
 def dataclass_to_dict(instance) -> dict:
-    """
-    Convert a dataclass instance to a dictionary, including embedded dataclasses.
-    """
     assert is_dataclass(instance)
     return {
-        field.name: (
-            dataclass_to_dict(getattr(instance, field.name))
-            if is_dataclass(getattr(instance, field.name))
-            else getattr(instance, field.name)
-        )
+        field.name: getattr(instance, field.name)
         for field in instance.__dataclass_fields__.values()
+        if not field.name.startswith("_")
     }
 
 
@@ -83,6 +77,41 @@ def _try_parse(text: str | None) -> list[str] | None:
         return [text]
 
 
+def get_distractor_template(
+    test_config: "NeedleTestConfig",
+    distractor_key: str,
+) -> str | None:
+    if test_config.distractors is None:
+        return None
+    return test_config.distractors.get(distractor_key, None)
+
+
+def iter_question_items(
+    test_config: "NeedleTestConfig",
+    base_seed: int = 42,
+) -> Generator["QuestionItem", None, None]:
+    for question_batch_type, question_batch_template in test_config.questions.items():
+        for question_batch_id, question_batch_kwargs in test_config.tests.items():
+            yield QuestionItem.from_template_with_placeholders(
+                test_id=test_config.id,
+                system_prompt=None
+                if test_config.system_prompt is None
+                else test_config.system_prompt.strip(),
+                task_template=test_config.task_template,
+                question_batch_id=question_batch_id,
+                question_batch_type=question_batch_type,
+                question_batch_template=question_batch_template,
+                question_batch_args=question_batch_kwargs["input_args"],
+                needle_template=test_config.needle,
+                gold_answers=question_batch_kwargs.get("gold_answers", None),
+                base_seed=base_seed,
+                character_set=test_config.character_set,
+                distractor_template=get_distractor_template(
+                    test_config, question_batch_type
+                ),
+            )
+
+
 @dataclass
 class NeedleTestConfig:
     """
@@ -109,51 +138,6 @@ class NeedleTestConfig:
     # tests: {"test_id": {"input_args": [...]}}
     tests: dict[str, dict[str, list]]
     distractors: dict[str, str] | None = None
-
-    def get_distractor_template(self, distractor_key: str) -> str | None:
-        if self.distractors is None:
-            return None
-        return self.distractors.get(distractor_key, None)
-
-    def __iter__(self):
-        return self.iter_question_items()
-
-    def iter_question_items(
-        self,
-        base_seed: int = 42,
-    ) -> Generator["QuestionItem", None, None]:
-        for question_batch_type, question_batch_template in self.questions.items():
-            for question_batch_id, question_batch_kwargs in self.tests.items():
-                yield QuestionItem.from_template_with_placeholders(
-                    test_id=self.id,
-                    system_prompt=None
-                    if self.system_prompt is None
-                    else self.system_prompt.strip(),
-                    task_template=self.task_template,
-                    question_batch_id=question_batch_id,
-                    question_batch_type=question_batch_type,
-                    question_batch_template=question_batch_template,
-                    question_batch_args=question_batch_kwargs["input_args"],
-                    needle_template=self.needle,
-                    gold_answers=question_batch_kwargs.get("gold_answers", None),
-                    base_seed=base_seed,
-                    character_set=self.character_set,
-                    distractor_template=self.get_distractor_template(
-                        question_batch_type
-                    ),
-                )
-
-    def __hash__(self):
-        return hash(self.__dict__())
-
-    def __dict__(self):
-        return dataclass_to_dict(self)
-
-    def __json__(self):
-        return json.dumps(self.__dict__(), sort_keys=True)
-
-    def __str__(self):
-        return self.__json__()
 
 
 @dataclass
@@ -184,12 +168,6 @@ class QuestionItem:
     distractor: str | None
 
     seed: int
-
-    def __hash__(self):
-        return hash(self.__dict__())
-
-    def __dict__(self):
-        return dataclass_to_dict(self)
 
     @classmethod
     def from_template_with_placeholders(

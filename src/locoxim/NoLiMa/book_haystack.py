@@ -7,9 +7,11 @@
 
 import hashlib
 import os
-from typing import Callable, Union
+from typing import Union
 
 import numpy as np
+
+from ..token_counter import TokenCounter
 
 
 class BookHaystack:
@@ -33,17 +35,15 @@ class BookHaystack:
     def _generate_w_needle_placement(
         self,
         needle: str,
-        token_count_func: Callable,
-        encoding_func: Callable,
-        decoding_func: Callable,
+        token_counter: TokenCounter,
         context_length: int,
         shift: int = 0,
         depth: float = 0.5,
         static_depth: float = None,
     ) -> dict:
         if self.text_encoded is None:
-            self.text_encoded = encoding_func(self.text)
-            self.text_tokens = [decoding_func([i]) for i in self.text_encoded]
+            self.text_encoded = token_counter.encode(self.text)
+            self.text_tokens = [token_counter.decode([i]) for i in self.text_encoded]
             self.valid_positions_token_counts = [0]
             for i in range(len(self.text_tokens)):
                 if "\n" in self.text_tokens[i]:
@@ -100,13 +100,13 @@ class BookHaystack:
         assert start_pos >= 0
         assert end_pos <= len(self.text_encoded)
 
-        pre_haystack = decoding_func(
+        pre_haystack = token_counter.decode(
             self.text_encoded[
                 start_pos : self.valid_positions_token_counts[closest_pos_arg] + 1
             ]
         )
         pre_haystack = pre_haystack[: max(pre_haystack.rfind("\n"), 0)]
-        post_haystack = decoding_func(
+        post_haystack = token_counter.decode(
             self.text_encoded[
                 self.valid_positions_token_counts[closest_pos_arg] + 1 : end_pos
             ]
@@ -123,9 +123,7 @@ class BookHaystack:
     def generate_w_needle_placement(
         self,
         needle: str,
-        token_count_func: Callable,
-        encoding_func: Callable,
-        decoding_func: Callable,
+        token_counter: TokenCounter,
         context_length: int,
         shift: int = 0,
         depth: float = 0.5,
@@ -137,9 +135,7 @@ class BookHaystack:
         if distractor is None:
             return self._generate_w_needle_placement(
                 needle,
-                token_count_func,
-                encoding_func,
-                decoding_func,
+                token_counter,
                 context_length,
                 shift,
                 depth,
@@ -174,9 +170,7 @@ class BookHaystack:
 
             placement_w_distractor = self._generate_w_needle_placement(
                 distractor,
-                token_count_func,
-                encoding_func,
-                decoding_func,
+                token_counter,
                 context_length,
                 shift,
                 dist_depth,
@@ -193,9 +187,7 @@ class BookHaystack:
 
             placement_w_needle = self._generate_w_needle_placement(
                 needle,
-                token_count_func,
-                encoding_func,
-                decoding_func,
+                token_counter,
                 context_length,
                 shift,
                 depth,

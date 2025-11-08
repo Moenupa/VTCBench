@@ -10,8 +10,6 @@ readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
     "httpx",
-    "google-cloud-aiplatform==1.74.0",
-    "google-genai==0.3.0",
     "jsonargparse[signatures]>=4.35.0,<4.43.0",
     "langchain-aws==0.2.9",
     "langchain-core==0.3.26",
@@ -20,9 +18,15 @@ dependencies = [
     "tiktoken",
     "transformers>=4.47.1,<=4.57.1,!=4.57.0,!=4.52.0",
     "sentencepiece",
+    "pillow",
     "deocr[playwright,pymupdf]>=0.3.0",
 ]
 
 # for local development
 # [tool.uv.sources]
 # deocr = { path = "../DeOCR", editable = true }
+
+[dependency-groups]
+dev = [
+    "pytest>=8.4.2",
+]

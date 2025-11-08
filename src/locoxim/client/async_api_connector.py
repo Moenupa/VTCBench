@@ -7,16 +7,10 @@
 
 # credit: https://github.com/adobe-research/NoLiMa/blob/main/evaluation/async_api_connector.py
 
-from functools import cache
 from pprint import pprint
 from typing import TYPE_CHECKING, Optional, Union
 
-import httpx
-import tiktoken
 from deocr.engine.playwright.async_api import transform
-from google import genai
-from google.genai import types
-from google.genai.errors import ClientError
 from langchain_aws import ChatBedrockConverse
 from openai import AsyncAzureOpenAI, AsyncOpenAI, RateLimitError
 from tenacity import (
@@ -25,11 +19,9 @@ from tenacity import (
     retry_if_exception_type,
     stop_after_delay,
     wait_random,
-    wait_random_exponential,
 )
-from transformers import AutoTokenizer
-from vertexai.preview.tokenization import get_tokenizer_for_model
 
+from ..token_counter import TokenCounter
 from .image_helper import ImageTextPayload
 
 if TYPE_CHECKING:
@@ -38,7 +30,6 @@ if TYPE_CHECKING:
 
 
 DEFAULT_TOKENIZER_MAPPING = {
-    "gemini": "google",
     "vllm": "huggingface",
     "openai": "tiktoken",
     "azure-openai": "tiktoken",
@@ -81,17 +72,11 @@ class APIConnector:
         ), f"Invalid tokenizer type: {tokenizer_type}"
 
         self.api_provider = api_provider
-        self.tokenizer_type = tokenizer_type or DEFAULT_TOKENIZER_MAPPING[api_provider]
-        self.tokenizer_model = tokenizer_model or model
 
-        if self.tokenizer_type == "huggingface":
-            self.tokenizer = AutoTokenizer.from_pretrained(
-                self.tokenizer_model, use_fast=True
-            )
-        elif self.tokenizer_type == "tiktoken":
-            self.tokenizer = tiktoken.encoding_for_model(self.tokenizer_model)
-        elif self.tokenizer_type == "google":
-            self.tokenizer = get_tokenizer_for_model(self.tokenizer_model)
+        self.token_counter = TokenCounter(
+            tokenizer_type=tokenizer_type or DEFAULT_TOKENIZER_MAPPING[api_provider],
+            tokenizer_model=tokenizer_model or model,
+        )
 
         self.default_system_prompt = system_prompt.strip()
 
@@ -115,21 +100,6 @@ class APIConnector:
                 max_retries=kwargs["max_retries"],
                 timeout=kwargs["timeout"],
             )
-        elif api_provider == "gemini":
-            self.api = genai.Client(
-                vertexai=True,
-                project=kwargs["project_ID"],
-                location=kwargs["location"],
-                http_options=types.HttpOptions(timeout=kwargs["http_timeout"] * 1000),
-            )
-
-            self.gemini_retry_config = {
-                "initial": kwargs["retry_delay"],
-                "maximum": kwargs["retry_max_delay"],
-                "multiplier": kwargs["retry_multiplier"],
-                "timeout": kwargs["retry_timeout"],
-            }
-
         elif api_provider == "aws":
             self.api = ChatBedrockConverse(
                 model=model,
@@ -141,65 +111,6 @@ class APIConnector:
 
         self.model = model
         self.model_config = kwargs
-
-    def encode(self, text: str) -> list:
-        """
-        Encodes the given text using the tokenizer
-
-        Parameters:
-            text (`str`): Text to encode
-
-        Returns:
-            `list`: Tokens
-        """
-        if self.tokenizer_type == "huggingface":
-            return self.tokenizer.encode(text, add_special_tokens=False)
-        elif self.tokenizer_type == "tiktoken":
-            return self.tokenizer.encode(text)
-        elif self.tokenizer_type == "google":
-            return self.tokenizer._sentencepiece_adapter._tokenizer.encode(text)
-        else:
-            raise ValueError(f"Invalid tokenizer type: {self.tokenizer_type}")
-
-    def decode(self, tokens: list) -> str:
-        """
-        Decodes the given tokens using the tokenizer
-
-        Parameters:
-            tokens (`list`): Tokens to decode
-
-        Returns:
-            `str`: Decoded text
-        """
-        if self.tokenizer_type == "huggingface":
-            return self.tokenizer.decode(tokens)
-        elif self.tokenizer_type == "tiktoken":
-            return self.tokenizer.decode(tokens)
-        elif self.tokenizer_type == "google":
-            return self.tokenizer._sentencepiece_adapter._tokenizer.decode(tokens)
-        else:
-            raise ValueError(f"Invalid tokenizer type: {self.tokenizer_type}")
-
-    @cache
-    def token_count(self, text: str) -> int:
-        """
-        Returns the token count of the given text
-
-        Parameters:
-            text (`str`): Text to count tokens
-            use_cache (`bool`, optional): Use cache for token count. Defaults to True.
-
-        Returns:
-            `int`: Token count of the text
-        """
-        if self.tokenizer_type == "tiktoken":
-            return len(self.tokenizer.encode(text))
-        elif self.tokenizer_type == "huggingface":
-            return len(self.tokenizer(text, add_special_tokens=False)["input_ids"])
-        elif self.tokenizer_type == "google":
-            return self.tokenizer.count_tokens(text).total_tokens
-        else:
-            raise ValueError(f"Invalid tokenizer type: {self.tokenizer_type}")
 
     async def generate_response(
         self,
@@ -218,9 +129,12 @@ class APIConnector:
         Parameters:
             system_prompt (`str`): System prompt
             user_prompt (`str`): User prompt
-            max_tokens (`int`, optional): Maximum tokens to generate. Defaults to 100.
-            temperature (`float`, optional): Temperature. Defaults to 0.0 (Greedy Sampling).
-            top_p (`float`, optional): Top-p. Defaults to 1.0.
+            max_tokens (`int`, optional): Maximum tokens to generate. Default: 100.
+            use_default_system_prompt (`bool`, optional): Whether to use the default system prompt. Default: True.
+            pure_text (`bool`, optional): Whether to use pure text in API call. If false, render context as images. Default: True.
+            generation_kwargs (`dict`, optional): Additional generation keyword arguments for the API call, e.g. temperature, top_p.
+            render_args (`RenderArgs`, optional): Rendering arguments for multimodal inputs.
+            verbose (`bool`, optional): Whether to print verbose logs. Default: False.
 
         Returns:
             `dict`: Response from the API that includes the response, prompt tokens count, completion tokens count, total tokens count, and stopping reason
@@ -306,6 +220,19 @@ class APIConnector:
                     params["max_completion_tokens"] = max_tokens
                     params["reasoning_effort"] = "minimal"
                     params["verbosity"] = "low"
+                elif self.model.startswith("gemini"):
+                    params["max_tokens"] = max_tokens
+                    params["extra_body"] = {
+                        "extra_body": {
+                            "google": {
+                                "thinking_config": {
+                                    "thinking_budget": self.model_config.get(
+                                        "thinking_budget", 0
+                                    ),
+                                }
+                            }
+                        }
+                    }
                 else:
                     params["max_tokens"] = max_tokens
                     params = params | (generation_kwargs or {})
@@ -344,52 +271,6 @@ class APIConnector:
 
             return output
 
-        elif self.api_provider == "gemini":
-
-            @retry(
-                reraise=True,
-                wait=wait_random_exponential(
-                    multiplier=self.gemini_retry_config["multiplier"],
-                    max=self.gemini_retry_config["maximum"],
-                ),
-                stop=stop_after_delay(self.gemini_retry_config["timeout"]),
-                retry=retry_if_exception_type(
-                    (ClientError, httpx.ConnectTimeout, httpx.TimeoutException)
-                ),
-            )
-            async def generate_content():
-                completion = await self.api.aio.models.generate_content(
-                    model=self.model,
-                    contents=messages[-1]["content"],
-                    config=types.GenerateContentConfig(
-                        system_instruction=self.default_system_prompt,
-                        **(generation_kwargs or {}),
-                        max_output_tokens=max_tokens,
-                        thinking_config=types.ThinkingConfig(
-                            thinking_budget=self.model_config["thinking_budget"]
-                        )
-                        if "thinking_budget" in self.model_config
-                        else None,
-                        seed=43,
-                    ),
-                )
-                return completion
-
-            completion = await generate_content()
-
-            return {
-                "response": completion.text if completion.text is not None else "",
-                "prompt_tokens": completion.usage_metadata.prompt_token_count,
-                "completion_tokens": completion.usage_metadata.candidates_token_count,
-                "total_tokens": completion.usage_metadata.total_token_count,
-                "finish_reason": completion.candidates[0].finish_reason,
-                "cached_tokens": completion.usage_metadata.cached_content_token_count
-                if completion.usage_metadata.cached_content_token_count is not None
-                else None,
-                "reasoning_tokens": completion.usage_metadata.thoughts_token_count
-                if completion.usage_metadata.thoughts_token_count is not None
-                else None,
-            }
         elif self.api_provider == "aws":
 
             @retry(
