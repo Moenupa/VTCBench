@@ -21,6 +21,7 @@ from tenacity import (
     wait_random,
 )
 
+from ..args import args_to_dict
 from ..dataio import api_cache_io, api_cache_path
 from ..token_counter import TokenCounter
 from .image_helper import ImageTextPayload
@@ -140,6 +141,26 @@ class APIConnector:
         Returns:
             `dict`: Response from the API that includes the response, prompt tokens count, completion tokens count, total tokens count, and stopping reason
         """
+        cache_path = api_cache_path(
+            {
+                "system_prompt": system_prompt,
+                "user_prompt": user_prompt,
+                "max_tokens": max_tokens,
+                "use_default_system_prompt": use_default_system_prompt,
+                "pure_text": pure_text,
+                "generation_kwargs": generation_kwargs,
+                "render_args": args_to_dict(render_args),
+                "api_provider": self.api_provider,
+                "model": self.model,
+            }
+        )
+        if (response := api_cache_io(cache_path)) is not None:
+            if verbose:
+                print("=== API Call Cached Response ===")
+                pprint(response)
+                print("===============================")
+            return response
+
         messages: list[dict] = []
 
         # form system prompt
@@ -201,14 +222,6 @@ class APIConnector:
             print("=== API Call Messages ===")
             pprint(messages)
             print("=========================")
-
-        cache_path = api_cache_path(messages)
-        if (response := api_cache_io(cache_path)) is not None:
-            if verbose:
-                print("=== API Call Cached Response ===")
-                pprint(response)
-                print("===============================")
-            return response
 
         # call API with retries
         if (

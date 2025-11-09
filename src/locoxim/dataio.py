@@ -66,7 +66,7 @@ def get_hash_str(input_str: str) -> str:
     return sha256(input_str.encode("utf-8")).hexdigest()
 
 
-def api_cache_path(messages: list[dict[str, str | dict]]) -> str:
+def api_cache_path(messages: dict) -> str:
     msg_str = json.dumps(messages, sort_keys=True)
     msg_hash = get_hash_str(msg_str)
     return f"{API_CACHE_DIR}/{msg_hash}.pkl"
