@@ -1,7 +1,7 @@
 # default arguments yml
 pagesize:
-  - 1792
-  - 1792
+  - 896
+  - 896
 marginLeft: 0
 marginRight: 0
 marginTop: 0
@@ -14,8 +14,8 @@ dpi: 96
 overwrite: false
 save_format: "jpeg"
 save_kwargs:
-  quality: 60
+  quality: 55
   optimize: true
   subsampling: 2
-css: "span {font-size: 12px;}"
+css: "span {font-size: 12px;} span.dialogue:nth-child(even) {background-color: lightgreen;} .timestamp {color: gray;} span + span {margin-left: 2px;} div + div {margin-top: .5em;} span.dialogue[data-speaker]:before {content: attr(data-speaker) ': ';font-weight: bold;}"
 css_path: null
