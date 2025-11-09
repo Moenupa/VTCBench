@@ -8,6 +8,13 @@ import pandas as pd
 from tqdm.contrib.concurrent import process_map
 
 
+def wrap_as_dict(obj: dict | int, default_key: str = "EM") -> dict:
+    if isinstance(obj, dict):
+        return obj
+    else:
+        return {default_key: obj}
+
+
 def read_worker(fp: str) -> dict:
     if fp.endswith(".json"):
         json_data: dict = json.load(open(fp))
@@ -16,7 +23,7 @@ def read_worker(fp: str) -> dict:
         return [
             {"collection_id": osp.dirname(fp), "json_id": osp.basename(fp)}
             | data_args
-            | result
+            | wrap_as_dict(result["metric"])
             for result in results
         ]
     assert False
@@ -53,7 +60,15 @@ if __name__ == "__main__":
     # TODO: add count of samples
     df = (
         df.groupby(["collection_id"])
-        .agg({"metric": "mean", "json_id": "count", "context_length": "mean"})
+        .agg(
+            {
+                "EM": "mean",
+                "contains": "mean",
+                "ROUGE-L": "mean",
+                "json_id": "count",
+                "context_length": "mean",
+            }
+        )
         .reset_index()
     )
     df.to_json("all_results.jsonl", index=False, lines=True, orient="records")
