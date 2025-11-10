@@ -6,9 +6,12 @@
 |:-:|:-:|:-:|:-:|:-:|
 | [RULER][gitruler]    | `contains` | numbers, uuid, QAs| noise, essay | [Apache-2.0][gitrulerLCS] |
 | [NoLiMa][gitnolima]  | `EM`, `contains`,<br/> `lastline_EM`, `lastline_contains` | QAs | book | [Adobe Research][gitnolimaLCS] |
-| [LoCoMo][gitlocomo]  | `EM`, `ROUGE` | - | conversation | [CC BY-NC 4.0][gitlocomoLCS] |
+| [LoCoMo][gitlocomo]  | `ROUGE` | - | conversation | [CC BY-NC 4.0][gitlocomoLCS] |
 
-`metric.contains` checks if the prediction is a substring of the ground truth.
+Metrics:
+
+- `contains` checks if the prediction is a substring of the (or any one of) ground truth.
+- `rouge` is computed using the [`rouge-score`](https://pypi.org/project/rouge-score) package.
 
 ## RULER
 
@@ -45,7 +48,7 @@ python prepare.py \
 
 ## NoLiMa
 
-Download via [Hugging Face][hfnolima]:
+Download via [NoLiMa Huggingface][hfnolima]:
 
 ```sh
 hf download --repo-type dataset amodaresi/NoLiMa --local-dir data/NoLiMa
@@ -67,7 +70,7 @@ Modify config file path accordingly: [config/data/nolima.json](../config/data/no
 
 ## LoCoMo
 
-Download from [Github](https://github.com/snap-research/locomo)
+Download from [LoCoMo Github][gitlocomo]
 
 ```sh
 mkdir -p data/LoCoMo
