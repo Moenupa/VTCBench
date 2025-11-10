@@ -119,7 +119,7 @@ def evaluate(
     api_connector = APIConnector(**args_to_dict(model_args))
     haystack = BookHaystack(haystack_path)
 
-    path_friendly_model_name = model_args.model.replace("/", "_").replace("-", "_")
+    path_friendly_model_name = model_args.model.replace("/", "_")
     eval_name = (
         f"{path_friendly_model_name}_book_{question_item.question_id}_{int(time.time())}"
         if question_item.question_id != ""
