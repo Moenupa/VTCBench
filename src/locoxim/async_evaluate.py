@@ -62,6 +62,9 @@ def _evaluate_response(
     assert gold_answers is not None and len(gold_answers) > 0, (
         "gold_answers is None or empty"
     )
+    # make sure gold answers are stripped strings, not int/float/etc.,
+    # otherwise the 'contains' metric may fail
+    gold_answers = [str(ans).strip() for ans in gold_answers]
 
     if metric is None:
         metric = ["EM", "contains", "lastline_EM", "lastline_contains", "ROUGE-L"]
@@ -75,7 +78,7 @@ def _evaluate_response(
                 scores[each_metric] = int(response.strip() in gold_answers)
             case "contains":
                 scores[each_metric] = int(
-                    any([gold_answer in response for gold_answer in gold_answers])
+                    any([f"{gold_answer}" in response for gold_answer in gold_answers])
                 )
             case "lastline_EM":
                 scores[each_metric] = int(
