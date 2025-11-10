@@ -1,7 +1,7 @@
 # default arguments yml
 pagesize:
-  - 1792
-  - 1792
+  - 896
+  - 896
 marginLeft: 0
 marginRight: 0
 marginTop: 0
@@ -16,5 +16,6 @@ save_format: "jpeg"
 save_kwargs:
   quality: 75
   optimize: true
+  subsampling: 2
 css: "p {font-size: 12px;}"
 css_path: null
