@@ -78,7 +78,9 @@ class APIConnector:
             tokenizer_model=tokenizer_model or model,
         )
 
-        self.default_system_prompt = None if system_prompt is None else system_prompt.strip()
+        self.default_system_prompt = (
+            None if system_prompt is None else system_prompt.strip()
+        )
 
         if api_provider == "openai":
             self.api = AsyncOpenAI(
