@@ -1,0 +1,11 @@
+{
+	"model": "Qwen2.5-VL-72B-Instruct",
+	"api_key": "EMPTY",
+	"api_url": "http://localhost:1026/v1",
+	"api_provider": "vllm",
+	"max_tokens": 192,
+	"timeout": 300,
+	"max_retries": 5,
+	"tokenizer_type": "huggingface",
+	"tokenizer_model": "Qwen/Qwen2.5-VL-7B-Instruct"
+}

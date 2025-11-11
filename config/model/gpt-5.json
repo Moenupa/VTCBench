@@ -5,7 +5,7 @@
 	"api_provider": "openai",
 	"openai_thinking_model": true,
 	"max_tokens": 192,
-	"timeout": 30,
+	"timeout": 90,
 	"max_retries": 3,
 	"tokenizer_type": "tiktoken",
 	"tokenizer_model": "gpt-5"
