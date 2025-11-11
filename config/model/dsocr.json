@@ -4,13 +4,11 @@
 	"api_url": "http://compute-a100-02:1030/v1/",
 	"api_provider": "vllm",
 	"system_prompt": null,
+	"temperature": 0,
 	"extra_kwargs": {
 		"ngram_size": 30,
 		"window_size": 90,
-		"whitelist_token_ids": [
-			128821,
-			128822
-		],
+		"whitelist_token_ids": [128821, 128822],
 		"skip_special_tokens": false
 	},
 	"max_tokens": 192,

@@ -14,7 +14,7 @@ dpi: 96
 overwrite: false
 save_format: "jpeg"
 save_kwargs:
-  quality: 55
+  quality: 50
   optimize: true
   subsampling: 2
 css: "span {font-size: 12px;} span.dialogue:nth-child(even) {background-color: lightgreen;} .timestamp {color: gray;} span + span {margin-left: 2px;} div + div {margin-top: .5em;} span.dialogue[data-speaker]:before {content: attr(data-speaker) ': ';font-weight: bold;}"
