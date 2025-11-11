@@ -181,3 +181,7 @@ class RunArgs:
         default=True,
         metadata={"help": "Enable caching of API responses to avoid redundant calls"},
     )
+    num_tasks: Optional[int] = field(
+        default=50,
+        metadata={"help": "Number of tasks to sample for evaluation"},
+    )

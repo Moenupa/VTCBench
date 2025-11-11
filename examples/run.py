@@ -5,6 +5,7 @@ from glob import iglob
 
 from deocr.engine.playwright.async_api import RenderArgs
 from jsonargparse import ArgumentParser
+from numpy.random import RandomState
 from tqdm import tqdm
 from tqdm.contrib.concurrent import process_map
 
@@ -54,6 +55,9 @@ def run_test(
                     "haystack_path": haystack_path,
                 }
             )
+    if run_args.num_tasks is not None and run_args.num_tasks < len(tasks):
+        rng = RandomState(run_args.base_seed)
+        tasks = rng.choice(tasks, size=run_args.num_tasks).tolist()
 
     if run_args.num_workers <= 1:
         with tqdm(total=len(tasks)) as pbar:
