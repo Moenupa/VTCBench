@@ -8,6 +8,8 @@ Like locoism for livestocks, Large Language Models (LLMs) can suffer from ingest
 uv venv
 uv sync
 uv run playwright install chromium
+# or if you use pip:
+pip install -e .
 ```
 
 <details><summary>More on playwright...</summary>

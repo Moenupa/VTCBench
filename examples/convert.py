@@ -100,7 +100,7 @@ def prepare_configs(
 
 
 def dialogue_to_text(speaker: str, dia_id: str, text: str, blip_caption: str) -> str:
-    if blip_caption == '':
+    if blip_caption == "":
         return f"<span class='dialogue' data-speaker='{speaker}' data-dia-id='{dia_id}'>{text}</span>"
     return f"<span class='dialogue' data-speaker='{speaker}' data-dia-id='{dia_id}'>[{blip_caption}] {text}</span>"
 
@@ -118,7 +118,10 @@ def prepare_context(conversation: dict[str, str | list[str]]) -> str:
         out += f"<span class='timestamp'>{conversation[session_dt_key]}</span>"
         for turn in conversation[session_key]:  # type: ignore
             out += dialogue_to_text(
-                turn["speaker"], turn["dia_id"], turn["text"], turn.get("blip_caption", '')
+                turn["speaker"],
+                turn["dia_id"],
+                turn["text"],
+                turn.get("blip_caption", ""),
             )
         out += "</div>"
     return out
