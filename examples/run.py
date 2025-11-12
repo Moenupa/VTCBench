@@ -55,7 +55,8 @@ def run_test(
                     "haystack_path": haystack_path,
                 }
             )
-    if run_args.num_tasks is not None and run_args.num_tasks < len(tasks):
+    # respect max number of tasks, if valid
+    if run_args.num_tasks is not None and (0 < run_args.num_tasks < len(tasks)):
         rng = RandomState(run_args.base_seed)
         tasks = rng.choice(tasks, size=run_args.num_tasks).tolist()
 
