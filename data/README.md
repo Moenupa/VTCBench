@@ -17,7 +17,7 @@ Metrics:
 
 ```sh
 # we prepared a simple test set for **Single-NIAH** task defined in RULER paper
-hf download --repo-type dataset MLLM-CL/RULER --local-dir data/NoLiMa
+hf download --repo-type dataset MLLM-CL/RULER --local-dir data/RULER
 ```
 
 <details><summary>A sample data point</summary>
