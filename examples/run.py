@@ -3,7 +3,7 @@ import os
 from copy import deepcopy
 from glob import iglob
 
-from deocr.engine.playwright.async_api import RenderArgs
+from deocr.engine.args import RenderArgs
 from jsonargparse import ArgumentParser
 from numpy.random import RandomState
 from tqdm import tqdm

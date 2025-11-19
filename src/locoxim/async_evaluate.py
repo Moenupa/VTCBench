@@ -12,22 +12,14 @@ import json
 import os
 import os.path as osp
 import time
-from typing import Literal
+from typing import TYPE_CHECKING, Optional
 
 import numpy as np
-from deocr.engine.playwright.async_api import RenderArgs
-from rouge_score import rouge_scorer
 
-from .args import (
-    DataArgs,
-    ModelArgs,
-    RunArgs,
-    args_to_dict,
-)
+from .args import args_to_dict
 from .client.async_api_connector import APIConnector
 from .dataio import (
     HASH_CACHE_KEY,
-    QuestionItem,
     api_cache_io,
     dataclass_to_dict,
     fill_placeholders,
@@ -36,6 +28,12 @@ from .dataio import (
 )
 from .metric import calc_metrics
 from .NoLiMa.book_haystack import BookHaystack
+
+if TYPE_CHECKING:
+    from deocr.engine.args import RenderArgs
+
+    from .args import DataArgs, ModelArgs, RunArgs
+    from .dataio import QuestionItem
 
 
 def scan_dir_for_hash(
@@ -54,11 +52,11 @@ def scan_dir_for_hash(
 
 
 def evaluate(
-    model_args: ModelArgs,
-    run_args: RunArgs,
-    data_args: DataArgs,
-    render_args: RenderArgs | None,
-    question_item: QuestionItem,
+    model_args: "ModelArgs",
+    run_args: "RunArgs",
+    data_args: "DataArgs",
+    render_args: Optional["RenderArgs"],
+    question_item: "QuestionItem",
     haystack_path: str,
     verbose: bool = False,
 ) -> str:
@@ -173,7 +171,7 @@ def evaluate(
                 max_tokens=model_args.max_tokens,
                 use_default_system_prompt=data_args.use_default_system_prompt,
                 pure_text=data_args.pure_text,
-                render_args=render_args,
+                render_args=question_item.render_args or render_args,
                 generation_kwargs={
                     "temperature": model_args.temperature,
                     "top_p": model_args.top_p,

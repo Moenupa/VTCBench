@@ -5,7 +5,9 @@ import re
 from dataclasses import dataclass, is_dataclass
 from functools import cache
 from hashlib import sha256
-from typing import Any, Generator, Optional
+from typing import Any, Generator
+
+from deocr.engine.args import RenderArgs
 
 HASH_CACHE_KEY = "hash_sha256"
 
@@ -111,17 +113,23 @@ def get_distractor_template(
     return test_config.distractors.get(distractor_key, None)
 
 
+def strip(s: str | None) -> str | None:
+    if s is None:
+        return None
+    return s.strip()
+
+
 def iter_question_items(
     test_config: "NeedleTestConfig",
     base_seed: int = 42,
 ) -> Generator["QuestionItem", None, None]:
+    # "questions": {"onehop": "What is {1}?", ...}
     for question_batch_type, question_batch_template in test_config.questions.items():
+        # "tests": {"question1": {"input_args": [...], "gold_answers": [...]}, ...}
         for question_batch_id, question_batch_kwargs in test_config.tests.items():
             yield QuestionItem.from_template_with_placeholders(
                 test_id=test_config.id,
-                system_prompt=None
-                if test_config.system_prompt is None
-                else test_config.system_prompt.strip(),
+                system_prompt=strip(test_config.system_prompt),
                 task_template=test_config.task_template,
                 question_batch_id=question_batch_id,
                 question_batch_type=question_batch_type,
@@ -145,28 +153,47 @@ class NeedleTestConfig:
 
     Args:
         id (str): Unique ID for the test.
-        reasoning_type (Optional[str]): Type of reasoning ability being tested (e.g., world knowledge).
-        system_prompt (Optional[str]): Optional system prompt override.
-        task_template (Optional[str]): Template for the task, filled with needle and question.
         needle (str): Template for the needle.
-        questions (dict[str, str]): Mapping from question type/difficulty to question templates, e.g. one-hop, two-hop.
-        character_set (Optional[list[str]]): List of characters for needle placement.
-        tests (dict[str, dict[str, list]]): Mapping from question IDs to their configurations.
-        distractors (dict[str, str] | None): Optional mapping from distractor keys to templates.
-        context (Optional[str]): Optional context override, avoiding iterating through haystack. Useful if question is dependent on context, i.e. haystack.
+        questions (dict[str, str]):
+            Mapping from question type/difficulty to question templates, e.g.
+            ``{"onehop": "What is {1}?"}``, where ``{1}`` is a placeholder for
+            1st argument in question configuration.
+        tests (dict[str, dict[str, list]]):
+            Mapping of ``{questionIDs: configurations}``. Configuration contains
+            - ``input_args: list[str]`` arguments to fill in the placeholders in
+            ``needle`` and question templates.
+            - ``gold_answers: list[str] | None`` ground-truth for evaluation.
+        reasoning_type (str | None):
+            Type of reasoning ability being tested (e.g., world knowledge).
+        system_prompt (str | None):
+            System prompt for the test.
+        task_template (str | None):
+            Prompt template with placeholders ``{haystack}`` and ``{question}``.
+        character_set (list[str] | None):
+            List of characters to fill placeholder ``{CHAR}`` in ``needle`` and
+            question templates, while also serving as gold answers.
+        distractors (dict[str, str] | None):
+            Mapping from question type/difficulty to distractor templates, just
+            like ``questions``.
+        context (str | None):
+            Context override, avoiding random haystack. Useful if question is
+            dependent on context, e.g. LoCoMo where question is dependent on
+            conversations (haystack).
+        render_kwargs (dict | None):
+            Rendering kwargs for :class:`deocr.engine.args.RenderArgs`.
     """
 
     id: str
     needle: str
     questions: dict[str, str]
     tests: dict[str, dict[str, list]]
-    reasoning_type: Optional[str] = None
-    system_prompt: Optional[str] = None
-    task_template: Optional[str] = None
-    character_set: Optional[list[str]] = None
-    # tests: {"test_id": {"input_args": [...]}}
+    reasoning_type: str | None = None
+    system_prompt: str | None = None
+    task_template: str | None = None
+    character_set: list[str] | None = None
     distractors: dict[str, str] | None = None
-    context: Optional[str] = None
+    context: str | None = None
+    render_kwargs: dict | None = None
 
 
 @dataclass
@@ -176,46 +203,54 @@ class QuestionItem:
 
     Args:
         question_id (str): Unique ID for the question.
-        system_prompt (Optional[str]): System prompt for the model.
-        task_template (Optional[str]): Task template for the question.
-        needle (Optional[str]): Needle string to fill in haystack; None if no needle placement.
+        system_prompt (str | None): System prompt for the model.
+        task_template (str | None): Task template for the question.
+        needle (str | None): Needle string to fill in haystack; None if no needle placement.
         retrieval_question (str): Question string with placeholders filled.
-        gold_answers (Optional[list[str]]): Correct answers for evaluation.
-        character_set (Optional[list[str]]): Character set for needle placement.
-        distractor (Optional[str]): Distractor string with placeholders filled, if any.
-        seed (Optional[int]): Seed for random operations.
+        gold_answers (list[str] | None): Correct answers for evaluation.
+        character_set (list[str] | None): Character set for needle placement.
+        distractor (str | None): Distractor string with placeholders filled, if any.
+        seed (int | None): Seed for random operations.
     """
 
     question_id: str
-    system_prompt: Optional[str]
-    task_template: Optional[str]
+    system_prompt: str | None
+    task_template: str | None
 
-    needle: Optional[str]
+    needle: str | None
     retrieval_question: str
-    gold_answers: Optional[list[str]]
-    character_set: Optional[list[str]]
-    distractor: Optional[str]
-    context: Optional[str]
+    gold_answers: list[str] | None
+    character_set: list[str] | None
+    distractor: str | None
 
-    seed: int
+    # if question accompanied a specific context
+    # do not use random haystack, use this context instead
+    context: str | None = None
+
+    # if question accompanied a specific rendering
+    # use it to override the default rendering args
+    render_args: RenderArgs | None = None
+
+    seed: int | None = None
 
     @classmethod
     def from_template_with_placeholders(
         cls,
         test_id: str,
-        system_prompt: Optional[str],
-        task_template: Optional[str],
+        system_prompt: str | None,
+        task_template: str | None,
         # args for each question
         question_batch_id: str,
         question_batch_type: str,
         question_batch_template: str,
         question_batch_args: list[str],
-        needle_template: Optional[str],
-        gold_answers: Optional[list[str]],
+        needle_template: str | None,
+        gold_answers: list[str] | None,
         base_seed: int,
-        character_set: Optional[list[str]] = None,
-        distractor_template: Optional[str] = None,
-        context: Optional[str] = None,
+        character_set: list[str] | None = None,
+        distractor_template: str | None = None,
+        context: str | None = None,
+        render_kwargs: dict | None = None,
     ) -> "QuestionItem":
         # fill in the placeholders, taking question_args one by one
         for argc, argv in enumerate(question_batch_args):
@@ -247,5 +282,6 @@ class QuestionItem:
             )
             % (2**32),
             context=context,
+            render_args=RenderArgs(**render_kwargs) if render_kwargs else None,
         )
         return new_item

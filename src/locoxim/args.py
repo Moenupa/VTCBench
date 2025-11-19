@@ -1,5 +1,4 @@
 from dataclasses import dataclass, field
-from typing import Optional
 
 
 def args_to_dict(args) -> dict:
@@ -34,7 +33,7 @@ class ModelArgs:
         default="vllm",
         metadata={"help": "API provider type, e.g., openai, vllm, etc."},
     )
-    openai_thinking_model: Optional[bool] = field(
+    openai_thinking_model: bool = field(
         default=False,
         metadata={
             "help": "Enables special kwargs handling for OpenAI models, e.g. gpt-5",
@@ -47,19 +46,19 @@ class ModelArgs:
         metadata={"help": "Maximum tokens to generate"},
     )
     # optional arguments for generation
-    temperature: Optional[float] = field(
+    temperature: float | None = field(
         default=None,
         metadata={"help": "Temperature for generation"},
     )
-    top_p: Optional[float] = field(
+    top_p: float | None = field(
         default=None,
         metadata={"help": "Top-p sampling parameter"},
     )
-    extra_kwargs: Optional[dict] = field(
+    extra_kwargs: dict | None = field(
         default=None,
         metadata={"help": "Additional sampling kwargs for generation"},
     )
-    system_prompt: Optional[str] = field(
+    system_prompt: str | None = field(
         default="You are a helpful assistant.",
         metadata={"help": "Default system prompt for the model"},
     )
@@ -75,11 +74,11 @@ class ModelArgs:
     )
 
     # computing tokens to figure out compression ratio
-    tokenizer_type: Optional[str] = field(
+    tokenizer_type: str | None = field(
         default="huggingface",
         metadata={"help": "Type of tokenizer to use"},
     )
-    tokenizer_model: Optional[str] = field(
+    tokenizer_model: str | None = field(
         default=None,
         metadata={
             "help": "Model path or local dir path, e.g. Qwen/Qwen2.5-VL-7B-Instruct."
@@ -101,7 +100,7 @@ class DataArgs:
         default="data/NoLiMa/haystack/rand_shuffle",
         metadata={"help": "Directory containing the haystack files"},
     )
-    task_template: Optional[str] = field(
+    task_template: str | None = field(
         default=None,
         metadata={"help": "Task template name overriding ones specified in needle set"},
     )
@@ -153,7 +152,7 @@ class RunArgs:
         default="EM",
         metadata={"help": "Evaluation metric"},
     )
-    log_dir: Optional[str] = field(
+    log_dir: str | None = field(
         default=None,
         metadata={
             "help": "Log directory to save intermediate output. If None, no logs are saved."
@@ -181,7 +180,7 @@ class RunArgs:
         default=".cache/api_calls",
         metadata={"help": "Enable caching of API responses to avoid redundant calls"},
     )
-    num_tasks: Optional[int] = field(
+    num_tasks: int | None = field(
         default=50,
         metadata={"help": "Number of tasks to sample for evaluation"},
     )

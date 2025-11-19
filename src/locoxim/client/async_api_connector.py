@@ -20,7 +20,7 @@ from tenacity import (
 )
 
 from ..args import args_to_dict
-from ..dataio import api_cache_io, api_cache_path, remove_html_tags
+from ..dataio import api_cache_io, api_cache_path, remove_html_tags, strip
 from ..token_counter import TokenCounter
 from .image_helper import ImageTextPayload
 
@@ -78,9 +78,7 @@ class APIConnector:
             tokenizer_model=tokenizer_model or model,
         )
 
-        self.default_system_prompt = (
-            None if system_prompt is None else system_prompt.strip()
-        )
+        self.default_system_prompt = strip(system_prompt)
 
         if api_provider == "openai":
             self.api = AsyncOpenAI(
@@ -121,10 +119,10 @@ class APIConnector:
         max_tokens: int = 100,
         use_default_system_prompt: bool = True,
         pure_text: bool = True,
-        generation_kwargs: Optional[dict] = None,
-        extra_kwargs: Optional[dict] = None,
+        generation_kwargs: dict | None = None,
+        extra_kwargs: dict | None = None,
         render_args: Optional["RenderArgs"] = None,
-        parent_api_cache_dir: Optional[str] = None,
+        parent_api_cache_dir: str | None = None,
         verbose: bool = False,
     ) -> dict:
         """
