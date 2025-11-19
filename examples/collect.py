@@ -1,12 +1,13 @@
 #!/bin/python3
-import re
 import json
 import os.path as osp
+import re
 import sys
 from glob import glob
 
 import pandas as pd
 from tqdm.contrib.concurrent import process_map
+
 from locoxim.metric import calc_metrics
 
 
@@ -35,11 +36,13 @@ def read_worker(fp: str) -> dict:
         results: list[dict] = json_data["results"]
         data_args: dict = json_data["data_args"]
         model_id: str = json_data["model_args"]["model"]
+        render_css: str = json_data["render_args"].get("css", "")
         # redo evaluation to ensure consistency
         return [
             recalc_metric(result["response"], result["gold_answers"])
             | data_args
             | {
+                "render_css": render_css,
                 "collection_id": osp.dirname(fp),
                 "json_id": osp.basename(fp),
                 "model_id": model_id,
@@ -82,25 +85,24 @@ if __name__ == "__main__":
         df.groupby(["collection_id"])
         .agg(
             {
-                "EM": "mean",
-                "contains": "mean",
                 "contains_all": "mean",
                 "ROUGE-L": "mean",
                 "json_id": "count",
                 "context_length": "mean",
                 "needle_set_path": "first",
                 "model_id": "first",
+                "render_css": "first",
             }
         )
         .reset_index()
     )
-    df[["EM", "contains", "contains_all", "ROUGE-L"]] = (
-        df[["EM", "contains", "contains_all", "ROUGE-L"]] * 100.0
-    ).round(2)
+    df[["contains_all", "ROUGE-L"]] = (df[["contains_all", "ROUGE-L"]] * 100.0).round(2)
     df.to_json("all_results.jsonl", index=False, lines=True, orient="records")
     with pd.option_context(
-        "display.max_rows", None, "display.max_columns", None, "display.width", 200
+        "display.max_rows", None, "display.max_columns", None, "display.width", None
     ):
         print(
-            df.set_index(["model_id", "needle_set_path", "context_length"]).sort_index()
+            df.set_index(
+                ["render_css", "model_id", "needle_set_path", "context_length"]
+            ).sort_index()
         )
