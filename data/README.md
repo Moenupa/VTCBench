@@ -55,7 +55,7 @@ Download from [LoCoMo Github][gitlocomo]
 
 ```sh
 mkdir -p data/LoCoMo
-wget -P data/LoCoMo https://github.com/snap-research/locomo/blob/main/data/locomo10.json
+wget -P data/LoCoMo https://raw.githubusercontent.com/snap-research/locomo/refs/heads/main/data/locomo10.json
 python examples/convert.py data/LoCoMo/locomo10.json
 ```
 
