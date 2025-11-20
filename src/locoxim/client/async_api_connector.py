@@ -8,7 +8,7 @@
 # credit: https://github.com/adobe-research/NoLiMa/blob/main/evaluation/async_api_connector.py
 
 from pprint import pprint
-from typing import TYPE_CHECKING, Optional, Union
+from typing import TYPE_CHECKING, Optional, Union, Literal
 
 from deocr.engine.playwright.async_api import transform
 from langchain_aws import ChatBedrockConverse
@@ -33,7 +33,6 @@ DEFAULT_TOKENIZER_MAPPING = {
     "vllm": "huggingface",
     "openai": "tiktoken",
     "azure-openai": "tiktoken",
-    "aws": "huggingface",
 }
 
 
@@ -59,7 +58,7 @@ class APIConnector:
         api_provider: str,
         model: str,
         system_prompt: str | None,
-        tokenizer_type: str | None = None,
+        tokenizer_type: Literal["huggingface", "tiktoken"] | None = None,
         tokenizer_model: str | None = None,
         **kwargs,
     ) -> None:
@@ -186,7 +185,7 @@ class APIConnector:
         if isinstance(user_prompt, str) and (pure_text or render_args is None):
             # plain text input
             user_prompt_content = remove_html_tags(user_prompt.strip())
-        elif isinstance(user_prompt, str):
+        elif isinstance(user_prompt, str) and render_args is not None:
             # multimodal input by guessing
             payload = ImageTextPayload()
 
@@ -278,19 +277,23 @@ class APIConnector:
 
             output = {
                 "response": completion.choices[0].message.content,
-                "prompt_tokens": completion.usage.prompt_tokens,
-                "completion_tokens": completion.usage.completion_tokens,
-                "total_tokens": completion.usage.total_tokens,
                 "finish_reason": completion.choices[0].finish_reason,
-                "cached_tokens": completion.usage.prompt_tokens_details.cached_tokens
-                if completion.usage.prompt_tokens_details
-                else None,
                 "api_cache_path": cache_path,
             }
-            if self.model_config.get("openai_thinking_model", False):
-                output["reasoning_tokens"] = (
-                    completion.usage.completion_tokens_details.reasoning_tokens
-                )
+
+            # if available, report token usage
+            if (usage := completion.usage) is not None:
+                output |= {
+                    "prompt_tokens": usage.prompt_tokens,
+                    "completion_tokens": usage.completion_tokens,
+                    "total_tokens": usage.total_tokens,
+                }
+
+                # if available, report stats for reasoning tokens
+                if (completion_details := usage.completion_tokens_details) is not None:
+                    output["reasoning_tokens"] = completion_details.reasoning_tokens
+                if (prompt_details := usage.prompt_tokens_details) is not None:
+                    output["cached_tokens"] = prompt_details.cached_tokens
 
             if verbose:
                 print("=== API Call Response ===")
@@ -299,25 +302,4 @@ class APIConnector:
 
             return output
 
-        elif self.api_provider == "aws":
-
-            @retry(
-                reraise=True,
-                wait=wait_random(5, 20),
-            )
-            async def generate_content():
-                completion = await self.api.ainvoke(messages)
-                return completion
-
-            completion = await generate_content()
-
-            return {
-                "response": completion.content,
-                "prompt_tokens": completion.usage_metadata["input_tokens"],
-                "completion_tokens": completion.usage_metadata["output_tokens"],
-                "total_tokens": completion.usage_metadata["total_tokens"],
-                "finish_reason": completion.response_metadata["stopReason"],
-                "api_cache_path": cache_path,
-            }
-        else:
-            raise ValueError(f"Invalid API provider: {self.api_provider}")
+        raise NotImplementedError(f"Unsupported API provider: {self.api_provider}")
