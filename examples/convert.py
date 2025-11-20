@@ -93,9 +93,9 @@ def prepare_configs(
                 for qi, qa in enumerate(qas)
             },
             distractors=None,
-            context=prepare_context(sample["conversation"]),
+            context=prepare_context(sample["conversation"]),  # type: ignore
         )
-        needles.append(dataclass_to_dict(needle))
+        needles.append(dataclass_to_dict(needle))  # type: ignore
     return needles
 
 
@@ -105,7 +105,7 @@ def dialogue_to_text(speaker: str, dia_id: str, text: str, blip_caption: str) ->
     return f"<span class='dialogue' data-speaker='{speaker}' data-dia-id='{dia_id}'>[{blip_caption}] {text}</span>"
 
 
-def prepare_context(conversation: dict[str, str | list[str]]) -> str:
+def prepare_context(conversation: dict[str, str | list[dict[str, str]]]) -> str:
     out = ""
     # locomo has no more than 40 sessions, so 50 is safe
     for i in range(1, 50):
@@ -116,7 +116,8 @@ def prepare_context(conversation: dict[str, str | list[str]]) -> str:
 
         out += "<div class='session'>"
         out += f"<span class='timestamp'>{conversation[session_dt_key]}</span>"
-        for turn in conversation[session_key]:  # type: ignore
+        for turn in conversation[session_key]:
+            assert isinstance(turn, dict)
             out += dialogue_to_text(
                 turn["speaker"],
                 turn["dia_id"],

@@ -8,7 +8,7 @@
 # credit: https://github.com/adobe-research/NoLiMa/blob/main/evaluation/async_api_connector.py
 
 from pprint import pprint
-from typing import TYPE_CHECKING, Optional, Union, Literal
+from typing import TYPE_CHECKING, Literal, Optional, Union
 
 from deocr.engine.playwright.async_api import transform
 from langchain_aws import ChatBedrockConverse

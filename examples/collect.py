@@ -30,7 +30,7 @@ def wrap_as_dict(obj: dict | int, default_key: str = "EM") -> dict:
         return {default_key: obj}
 
 
-def read_worker(fp: str) -> dict:
+def read_worker(fp: str) -> list[dict]:
     if fp.endswith(".json"):
         json_data: dict = json.load(open(fp))
         results: list[dict] = json_data["results"]
@@ -52,7 +52,7 @@ def read_worker(fp: str) -> dict:
     assert False
 
 
-def get_args(defaults: str = None) -> str:
+def get_args(defaults: list[str] | None = None) -> list[str]:
     if len(sys.argv) > 1:
         files = []
         for arg in sys.argv[1:]:

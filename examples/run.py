@@ -59,7 +59,7 @@ def run_test(
     # respect max number of tasks, if valid
     if run_args.num_tasks is not None and (0 < run_args.num_tasks < len(tasks)):
         rng = RandomState(run_args.base_seed)
-        tasks = rng.choice(tasks, size=run_args.num_tasks).tolist()
+        tasks = rng.choice(tasks, size=run_args.num_tasks).tolist()  # type: ignore
 
     if run_args.num_workers <= 1:
         with tqdm(total=len(tasks)) as pbar:

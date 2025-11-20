@@ -153,7 +153,7 @@ class NeedleTestConfig:
 
     Args:
         id (str): Unique ID for the test.
-        needle (str): Template for the needle.
+        needle (str | None): Template for the needle.
         questions (dict[str, str]):
             Mapping from question type/difficulty to question templates, e.g.
             ``{"onehop": "What is {1}?"}``, where ``{1}`` is a placeholder for
@@ -184,7 +184,7 @@ class NeedleTestConfig:
     """
 
     id: str
-    needle: str
+    needle: str | None
     questions: dict[str, str]
     tests: dict[str, dict[str, list]]
     reasoning_type: str | None = None
