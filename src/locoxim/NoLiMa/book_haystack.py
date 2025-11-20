@@ -12,6 +12,7 @@ from typing import Union
 import numpy as np
 
 from ..token_counter import TokenCounter
+from ..dataio import remove_html_tags
 
 
 class BookHaystack:
@@ -142,7 +143,7 @@ class BookHaystack:
                 "static_depth": None,
                 "token_depth": None,
                 "depth": None,
-                "context_length_wo_needle": None,
+                "context_length_wo_needle": token_counter.token_count(remove_html_tags(context)),
             }
         assert context_length is not None
 
