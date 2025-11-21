@@ -96,7 +96,8 @@ if __name__ == "__main__":
         )
         .reset_index()
     )
-    df[["contains_all", "ROUGE-L"]] = (df[["contains_all", "ROUGE-L"]] * 100.0).round(2)
+    METRIC_COLUMNS = list({"contains", "contains_all", "ROUGE-L"} & set(df.columns))
+    df[METRIC_COLUMNS] = (df[METRIC_COLUMNS] * 100.0).round(2)
     df.to_json("all_results.jsonl", index=False, lines=True, orient="records")
     with pd.option_context(
         "display.max_rows", None, "display.max_columns", None, "display.width", None
