@@ -1,5 +1,10 @@
 {
-	"needle_set_path": ["data/LoCoMo/needlesets/4_SingleHop.json"],
+	"needle_set_path": [
+		"data/LoCoMo/needlesets/1_MultiHop.json",
+		"data/LoCoMo/needlesets/2_Temporal.json",
+		"data/LoCoMo/needlesets/3_OpenDomain.json",
+		"data/LoCoMo/needlesets/4_SingleHop.json"
+	],
 	"haystack_dir": "data/LoCoMo/haystack",
 	"task_template": "{haystack}\n\nQuestion:Based on the above context, write an answer in the form of a short phrase for the following question. Answer with exact words from the context whenever possible.\n\n{question}",
 	"use_default_system_prompt": true,
