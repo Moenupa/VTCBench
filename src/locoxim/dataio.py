@@ -287,9 +287,3 @@ class QuestionItem:
             render_args=RenderArgs(**render_kwargs) if render_kwargs else None,
         )
         return new_item
-
-
-def save_question(
-    out_path: str, question_item: QuestionItem, render_args_override: RenderArgs
-) -> None:
-    source = args_to_dict(question_item)

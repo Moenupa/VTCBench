@@ -1,7 +1,7 @@
 import base64
 from io import BytesIO
 
-from PIL import Image as PILImage
+from PIL.Image import Image as PILImage
 
 
 class ImageTextPayload:
@@ -16,7 +16,7 @@ class ImageTextPayload:
 
     def add_image_adaptive(
         self,
-        image: bytes | str | PILImage.Image,
+        image: bytes | str | PILImage,
         save_format: str | None = None,
         save_kwargs: dict | None = None,
     ):
@@ -61,7 +61,7 @@ def image_path_to_data_url(image_path: str) -> str:
 
 
 def image_object_to_data_url(
-    image_object: PILImage.Image,
+    image_object: PILImage,
     save_format: str | None,
     save_kwargs: dict | None = None,
 ) -> str:
@@ -100,7 +100,7 @@ def image_bytes_to_data_url(image_bytes: bytes, ext: str) -> str:
 
 
 def adaptive_image_to_data_url(
-    image: bytes | str | PILImage.Image,
+    image: bytes | str | PILImage,
     save_format: str | None = None,
     save_kwargs: dict | None = None,
 ) -> str:
@@ -120,7 +120,7 @@ def adaptive_image_to_data_url(
     elif isinstance(image, str):
         # use path for file extension
         return image_path_to_data_url(image)
-    elif isinstance(image, PILImage.Image):
+    elif isinstance(image, PILImage):
         # no ext needed, default to jpeg
         return image_object_to_data_url(image, save_format, save_kwargs)
 
