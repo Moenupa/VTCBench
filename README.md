@@ -1,15 +1,17 @@
-# LoCoxim
+# VTCBench: Can Vision-Language Models Understand Long Contexts with Vision-Text Compression?
 
-Like locoism for livestocks, Large Language Models (LLMs) can suffer from ingestion of large amounts of context. LoCoxim (**Lo**ng-**Co**nte**X**t via **Im**ages, lo-co-sim) aims to propose an alternative to LLM memory by converting context to images and leveraging Vision-Language Models (VLMs) for improved understanding and generation.
-
-## Setup
+## Quick Start
 
 ```sh
 uv venv
 uv sync
 uv run playwright install chromium
-# or if you use pip:
+```
+
+```sh
+# or using pip:
 pip install -e .
+playwright install chromium
 ```
 
 <details><summary>More on playwright...</summary>
