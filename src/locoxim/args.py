@@ -83,8 +83,8 @@ class DataArgs:
     Arguments for data sources, settings, and templates
     """
 
-    needle_set_path: str = field(
-        default="data/NoLiMa/needlesets/needle_set.json",
+    needle_set_path: list[str] = field(
+        default_factory=list,
         metadata={"help": "Path to a file containing the needle tests configuration"},
     )
     haystack_dir: str = field(

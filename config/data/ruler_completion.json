@@ -1,5 +1,10 @@
 {
-	"needle_set_path": "data/RULER/needlesets/s_niah.json",
+	"needle_set_path": [
+		"data/RULER/needlesets/s_niah.json",
+		"data/RULER/needlesets/mk_niah.json",
+		"data/RULER/needlesets/mv_niah.json",
+		"data/RULER/needlesets/mq_niah.json"
+	],
 	"haystack_dir": "data/RULER/haystack/",
 	"task_template": "{haystack}\n\nQuestion:the special magic numbers for {question} is: ",
 	"use_default_system_prompt": true,

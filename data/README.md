@@ -51,7 +51,7 @@ Modify config file path accordingly: [config/data/nolima.json](../config/data/no
 
 ```json
 {
-  "needle_set_path": "data/NoLiMa/needlesets/needle_set.json",
+  "needle_set_path": ["data/NoLiMa/needlesets/needle_set.json"],
   "haystack_dir": "data/NoLiMa/haystack/rand_shuffle",
   "...": "..."
 }
@@ -83,7 +83,7 @@ Modify config file path accordingly: [config/data/locomo.json](../config/data/lo
 
 ```json
 {
-  "needle_set_path": "data/LoCoMo/needlesets/4_SingleHop.json",
+  "needle_set_path": ["data/LoCoMo/needlesets/4_SingleHop.json"],
   "haystack_dir": "data/LoCoMo/haystack",
   "...": "..."
 }

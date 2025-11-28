@@ -37,11 +37,11 @@ def run_smoke_test(
     run_args: RunArgs,
     render_args: RenderArgs,
 ):
-    with open(data_args.needle_set_path, "r") as file:
-        _raw_dict: list[dict] = json.load(file)
-        experiment_config: list[NeedleTestConfig] = [
-            NeedleTestConfig(**e) for e in _raw_dict
-        ]
+    experiment_config: list[NeedleTestConfig] = []
+    for needle_path in data_args.needle_set_path:
+        with open(needle_path, "r") as file:
+            _raw_dict: list[dict] = json.load(file)
+            experiment_config += [NeedleTestConfig(**e) for e in _raw_dict]
     if run_args.parent_api_cache_dir is not None:
         os.makedirs(run_args.parent_api_cache_dir, exist_ok=True)
 
