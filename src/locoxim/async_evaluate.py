@@ -58,16 +58,13 @@ def evaluate(
     question_item: "QuestionItem",
     haystack_path: str,
     verbose: bool = False,
+    save_sample_dir: str | None = None,
 ) -> str:
     api_connector = APIConnector(**args_to_dict(model_args))
     haystack = BookHaystack(haystack_path)
 
     path_friendly_model_name = model_args.model.replace("/", "_")
-    eval_name = (
-        f"{path_friendly_model_name}_book_{question_item.question_id}_{int(time.time())}"
-        if question_item.question_id != ""
-        else f"{path_friendly_model_name}_book_{int(time.time())}"
-    )
+    eval_name = f"{path_friendly_model_name}_{haystack.get_hash()[:8]}_{question_item.question_id}_{int(time.time())}"
 
     results_dir = f"{run_args.parent_results_dir}/{path_friendly_model_name}/{get_hash(args_to_dict(data_args) | args_to_dict(model_args) | args_to_dict(render_args))}"
     os.makedirs(results_dir, exist_ok=True)
@@ -162,6 +159,24 @@ def evaluate(
         filled_template = task_template.format(
             haystack=placement_output["text"], question=retrieval_question
         )
+
+        if save_sample_dir is not None:
+            # save the sampled question and context
+            os.makedirs(f"data/VTCBench-S/{save_sample_dir}", exist_ok=True)
+            save_target = f"data/VTCBench-S/{save_sample_dir}/{osp.basename(results_path).replace(path_friendly_model_name, '')}l"
+            with open(save_target, "a+") as f:
+                json.dump(
+                    {
+                        "problem": retrieval_question,
+                        "answers": question_item.gold_answers or [selected_character],
+                        "_context": placement_output["text"],
+                        "_source": args_to_dict(question_item),
+                        "_render_args": args_to_dict(render_args),
+                    },
+                    f,
+                )
+                f.write("\n")
+            # continue
 
         async_tasks.append(
             api_connector.generate_response(

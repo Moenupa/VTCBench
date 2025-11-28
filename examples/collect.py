@@ -10,11 +10,11 @@ from tqdm.contrib.concurrent import process_map
 
 from locoxim.metric import calc_metrics
 
-
 __doc__ = """
 Collect results from multiple json files and summarize the results by metadata,
 such as VLM model name, data info, render args, shown as a table.
 """
+
 
 def remove_think_tags(text: str) -> str:
     # Remove <think>...</think> tags and their content
@@ -80,7 +80,12 @@ if __name__ == "__main__":
 
     # TODO: add count of samples
     df = (
-        df.groupby(["collection_id"])
+        df.groupby(
+            [
+                "needle_set_path",
+                "collection_id",
+            ]
+        )
         .agg(
             {
                 "contains_all": "mean",
@@ -102,6 +107,11 @@ if __name__ == "__main__":
     ):
         print(
             df.set_index(
-                ["render_css", "model_id", "needle_set_path", "context_length"]
+                [
+                    "render_css",
+                    "model_id",
+                    "needle_set_path",
+                    "context_length",
+                ]
             ).sort_index()
         )
