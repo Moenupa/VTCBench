@@ -18,8 +18,7 @@ from tenacity import (
     wait_random,
 )
 
-from ..args import args_to_dict
-from ..dataio import api_cache_io, api_cache_path, remove_html_tags, strip
+from ..dataio import api_cache_io, api_cache_path, args_to_dict, remove_html_tags, strip
 from ..token_counter import TokenCounter
 from .image_helper import ImageTextPayload
 
@@ -107,7 +106,7 @@ class APIConnector:
     @retry(
         reraise=True,
         wait=wait_random(1, 20),
-        stop=stop_after_delay(300),
+        stop=stop_after_delay(30),
     )
     async def call_openai_api(
         self,

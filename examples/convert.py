@@ -4,7 +4,7 @@ import os.path as osp
 import sys
 from typing import TypedDict
 
-from locoxim.dataio import NeedleTestConfig, dataclass_to_dict
+from locoxim.dataio import NeedleTestConfig, args_to_dict
 
 
 class QA(TypedDict):
@@ -95,7 +95,7 @@ def prepare_configs(
             distractors=None,
             context=prepare_context(sample["conversation"]),  # type: ignore
         )
-        needles.append(dataclass_to_dict(needle))  # type: ignore
+        needles.append(args_to_dict(needle))  # type: ignore
     return needles
 
 

@@ -2,7 +2,7 @@ import json
 import os.path as osp
 import pickle as pkl
 import re
-from dataclasses import dataclass, is_dataclass
+from dataclasses import asdict, dataclass, is_dataclass
 from hashlib import sha256
 from typing import Any, Generator
 
@@ -11,13 +11,17 @@ from deocr.engine.args import RenderArgs
 HASH_CACHE_KEY = "hash_sha256"
 
 
-def dataclass_to_dict(instance) -> dict:
-    assert is_dataclass(instance)
-    return {
-        field.name: getattr(instance, field.name)
-        for field in instance.__dataclass_fields__.values()
-        if not field.name.startswith("_")
-    }
+def args_to_dict(args) -> dict:
+    """
+    Convert dataclass arguments to a dictionary.
+    """
+    if args is None:
+        return {}
+    if is_dataclass(args):
+        return {k: v for k, v in asdict(args).items() if not k.startswith("_")}
+
+    # Namespace, or other dict-like
+    return {k: v for k, v in dict(args).items() if not k.startswith("_")}
 
 
 def has_placeholder(text: str, placeholder: str = "{CHAR}") -> bool:
@@ -283,3 +287,9 @@ class QuestionItem:
             render_args=RenderArgs(**render_kwargs) if render_kwargs else None,
         )
         return new_item
+
+
+def save_question(
+    out_path: str, question_item: QuestionItem, render_args_override: RenderArgs
+) -> None:
+    source = args_to_dict(question_item)

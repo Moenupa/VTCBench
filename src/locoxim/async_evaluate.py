@@ -16,12 +16,11 @@ from typing import TYPE_CHECKING, Optional
 
 import numpy as np
 
-from .args import args_to_dict
 from .client.async_api_connector import APIConnector
 from .dataio import (
     HASH_CACHE_KEY,
     api_cache_io,
-    dataclass_to_dict,
+    args_to_dict,
     fill_placeholders,
     get_hash,
     has_placeholder,
@@ -78,7 +77,7 @@ def evaluate(
         "data_args": args_to_dict(data_args),
         "run_args": args_to_dict(run_args),
         "render_args": args_to_dict(render_args),
-        "question_item": dataclass_to_dict(question_item),
+        "question_item": args_to_dict(question_item),
         "system_prompt": api_connector.default_system_prompt
         if data_args.use_default_system_prompt
         else question_item.system_prompt,

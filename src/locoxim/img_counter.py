@@ -4,9 +4,8 @@ from typing import TYPE_CHECKING, Generator
 import numpy as np
 from deocr.engine.playwright.async_api import transform as async_transform
 
-from .args import args_to_dict
 from .client.async_api_connector import APIConnector
-from .dataio import fill_placeholders, has_placeholder
+from .dataio import args_to_dict, fill_placeholders, has_placeholder
 from .NoLiMa.book_haystack import BookHaystack
 
 if TYPE_CHECKING:
