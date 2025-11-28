@@ -234,7 +234,7 @@ class APIConnector:
 
             images = await transform(
                 item=vision_part,
-                cache_dir=".cache",
+                cache_dir=".cache/images",
                 render_args=render_args,
             )
             for image in images:
