@@ -58,7 +58,6 @@ def evaluate(
     question_item: "QuestionItem",
     haystack_path: str,
     verbose: bool = False,
-    save_sample_dir: str | None = None,
 ) -> str:
     api_connector = APIConnector(**args_to_dict(model_args))
     haystack = BookHaystack(haystack_path)
@@ -81,7 +80,8 @@ def evaluate(
         "haystack_hash": haystack.get_hash(),
     }
     # snapshot -> hash
-    outputs[HASH_CACHE_KEY] = get_hash(outputs)
+    output_hash = get_hash(outputs)
+    outputs[HASH_CACHE_KEY] = output_hash
 
     outputs["eval_name"] = eval_name
     results_for_all_depths: list[dict] = []
@@ -95,15 +95,14 @@ def evaluate(
     # WARN: this could cause a lot of IO traffic
     if run_args.prevent_duplicate_tests:
         scan_dir = osp.dirname(results_path)
-        target_hash = outputs[HASH_CACHE_KEY]
         if (
             match := scan_dir_for_hash(
                 scan_dir=scan_dir,
-                target_hash=target_hash,
+                target_hash=output_hash,
             )
         ) is not None:
             print(
-                f"Duplicate: {match}, {target_hash}, skipped.",
+                f"Duplicate: {match}, {output_hash}, skipped.",
             )
             return match
 
@@ -160,24 +159,6 @@ def evaluate(
             haystack=placement_output["text"], question=retrieval_question
         )
 
-        if save_sample_dir is not None:
-            # save the sampled question and context
-            os.makedirs(f"data/VTCBench-S/{save_sample_dir}", exist_ok=True)
-            save_target = f"data/VTCBench-S/{save_sample_dir}/{osp.basename(results_path).replace(path_friendly_model_name, '')}l"
-            with open(save_target, "a+") as f:
-                json.dump(
-                    {
-                        "problem": retrieval_question,
-                        "answers": question_item.gold_answers or [selected_character],
-                        "_context": placement_output["text"],
-                        "_source": args_to_dict(question_item),
-                        "_render_args": args_to_dict(render_args),
-                    },
-                    f,
-                )
-                f.write("\n")
-            # continue
-
         async_tasks.append(
             api_connector.generate_response(
                 system_prompt=question_item.system_prompt,
@@ -191,7 +172,7 @@ def evaluate(
                     "top_p": model_args.top_p,
                 },
                 extra_kwargs=model_args.extra_kwargs,
-                parent_api_cache_dir=run_args.parent_api_cache_dir,
+                api_cache_dir=run_args.api_cache_dir,
                 verbose=verbose and (_needle_depth_i == 0),
             )
         )

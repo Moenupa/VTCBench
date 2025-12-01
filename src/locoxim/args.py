@@ -163,9 +163,17 @@ class RunArgs:
         default="results",
         metadata={"help": "Parent directory to save results"},
     )
-    parent_api_cache_dir: str | None = field(
+    api_cache_dir: str | None = field(
         default=".cache/api_calls",
-        metadata={"help": "Enable caching of API responses to avoid redundant calls"},
+        metadata={
+            "help": "Parent dir to store api call-response cache to avoid redundant calls. If None, disable caching."
+        },
+    )
+    image_dir: str | None = field(
+        default=".cache/images",
+        metadata={
+            "help": "Parent dir to store intermediate images generated during evaluation."
+        },
     )
     num_tasks: int | None = field(
         default=50,

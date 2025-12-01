@@ -88,8 +88,8 @@ def run_test(
         with open(needle_path, "r") as file:
             _raw_dict: list[dict] = json.load(file)
             experiment_config += [NeedleTestConfig(**e) for e in _raw_dict]
-    if run_args.parent_api_cache_dir is not None:
-        os.makedirs(run_args.parent_api_cache_dir, exist_ok=True)
+    if run_args.api_cache_dir is not None:
+        os.makedirs(run_args.api_cache_dir, exist_ok=True)
 
     # an experiment is a json in NoLiMA, it contains multiple tests,
     #   where a test has a test_id, test templates and several question items,

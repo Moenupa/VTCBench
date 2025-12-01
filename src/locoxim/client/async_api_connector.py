@@ -159,7 +159,8 @@ class APIConnector:
         generation_kwargs: dict | None = None,
         extra_kwargs: dict | None = None,
         render_args: Optional["RenderArgs"] = None,
-        parent_api_cache_dir: str | None = None,
+        api_cache_dir: str | None = None,
+        image_cache_dir: str | None = None,
         verbose: bool = False,
     ) -> dict:
         """
@@ -190,10 +191,10 @@ class APIConnector:
                 "api_provider": self.api_provider,
                 "model": self.model,
             },
-            parent=parent_api_cache_dir,
+            parent=api_cache_dir,
         )
         if (
-            parent_api_cache_dir is not None
+            api_cache_dir is not None
             and (response := api_cache_io(cache_path)) is not None
         ):
             if verbose:
@@ -234,7 +235,7 @@ class APIConnector:
 
             images = await transform(
                 item=vision_part,
-                cache_dir=".cache/images",
+                cache_dir=image_cache_dir,
                 render_args=render_args,
             )
             for image in images:

@@ -1,5 +1,5 @@
 import asyncio
-from typing import TYPE_CHECKING, Generator
+from typing import TYPE_CHECKING, Generator, TypedDict
 
 import numpy as np
 from deocr.engine.playwright.async_api import transform as async_transform
@@ -10,9 +10,20 @@ from .NoLiMa.book_haystack import BookHaystack
 
 if TYPE_CHECKING:
     from deocr.engine.args import RenderArgs
+    from PIL.Image import Image as PILImage
 
     from .args import DataArgs, ModelArgs
     from .dataio import QuestionItem
+
+
+class ContextImagePair(TypedDict):
+    problem: str
+    answers: list[str]
+    images: list["PILImage"]
+    _context: str
+    _source: "QuestionItem"
+    _render_args: "RenderArgs"
+    _placement_output: dict
 
 
 def iter_context_and_images(
@@ -21,7 +32,7 @@ def iter_context_and_images(
     render_args: "RenderArgs",
     question_item: "QuestionItem",
     haystack_path: str,
-) -> Generator[tuple[str, int, tuple], None, None]:
+) -> Generator[ContextImagePair, None, None]:
     """
     Yield tuples (context, context_len, images) incrementally.
     """
@@ -82,8 +93,13 @@ def iter_context_and_images(
             )
         )
 
-        yield (
-            placement_output["text"],
-            placement_output["context_length_wo_needle"],
-            images,
-        )
+        context = placement_output.pop("text")
+        yield {
+            "problem": retrieval_question,
+            "answers": question_item.gold_answers or [selected_character],
+            "images": images,
+            "_context": context,
+            "_source": question_item,
+            "_render_args": render_args,
+            "_placement_output": placement_output,
+        }
