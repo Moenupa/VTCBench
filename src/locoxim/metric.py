@@ -1,6 +1,12 @@
+import re
 from typing import Literal
 
 from rouge_score import rouge_scorer
+
+
+def remove_think_tags(text: str) -> str:
+    # Remove <think>...</think> tags and their content
+    return re.sub(r"<think>.*?</think>", "", text, flags=re.DOTALL)
 
 
 def calc_metrics(
@@ -24,7 +30,7 @@ def calc_metrics(
     # make sure gold answers are stripped strings, not int/float/etc.,
     # otherwise the 'contains' metric may fail
     gold_answers = [str(ans).strip() for ans in gold_answers]
-
+    response = remove_think_tags(response).strip()
     if metric is None:
         metric = [
             "EM",
@@ -39,7 +45,7 @@ def calc_metrics(
     for each_metric in metric:
         match each_metric:
             case "EM":
-                scores[each_metric] = int(response.strip() in gold_answers)
+                scores[each_metric] = int(response in gold_answers)
             case "contains":
                 scores[each_metric] = int(
                     any([f"{gold_answer}" in response for gold_answer in gold_answers])
@@ -52,14 +58,12 @@ def calc_metrics(
                     / len(gold_answers)
                 )
             case "lastline_EM":
-                scores[each_metric] = int(
-                    response.strip().split("\n")[-1] in gold_answers
-                )
+                scores[each_metric] = int(response.split("\n")[-1] in gold_answers)
             case "lastline_contains":
                 scores[each_metric] = int(
                     any(
                         [
-                            gold_answer in response.strip().split("\n")[-1]
+                            gold_answer in response.split("\n")[-1]
                             for gold_answer in gold_answers
                         ]
                     )

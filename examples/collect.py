@@ -1,7 +1,6 @@
 #!/bin/python3
 import json
 import os.path as osp
-import re
 import sys
 from glob import glob
 
@@ -16,18 +15,6 @@ such as VLM model name, data info, render args, shown as a table.
 """
 
 
-def remove_think_tags(text: str) -> str:
-    # Remove <think>...</think> tags and their content
-    return re.sub(r"<think>.*?</think>", "", text, flags=re.DOTALL)
-
-
-def recalc_metric(response: str, gold_answers: list) -> dict:
-    return calc_metrics(
-        response=remove_think_tags(response),
-        gold_answers=gold_answers,
-    )
-
-
 def read_worker(fp: str) -> list[dict]:
     if fp.endswith(".json"):
         json_data: dict = json.load(open(fp))
@@ -37,7 +24,7 @@ def read_worker(fp: str) -> list[dict]:
         render_css: str = json_data["render_args"].get("css", "")
         # redo evaluation to ensure consistency
         return [
-            recalc_metric(result["response"], result["gold_answers"])
+            calc_metrics(result["response"], result["gold_answers"])
             | data_args
             | {
                 "render_css": render_css,

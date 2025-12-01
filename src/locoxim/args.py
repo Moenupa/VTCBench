@@ -139,19 +139,11 @@ class RunArgs:
     Arguments for identifying, collecting, and reporting runs.
     """
 
-    metric: str = field(
-        default="EM",
-        metadata={"help": "Evaluation metric"},
-    )
     log_dir: str | None = field(
         default=None,
         metadata={
             "help": "Log directory to save intermediate output. If None, no logs are saved."
         },
-    )
-    parent_results_dir: str = field(
-        default="results",
-        metadata={"help": "Parent directory to save results"},
     )
     base_seed: int = field(
         default=42,
@@ -166,6 +158,10 @@ class RunArgs:
     num_workers: int = field(
         default=1,
         metadata={"help": "Number of parallel workers for evaluation"},
+    )
+    parent_results_dir: str = field(
+        default="results",
+        metadata={"help": "Parent directory to save results"},
     )
     parent_api_cache_dir: str | None = field(
         default=".cache/api_calls",
