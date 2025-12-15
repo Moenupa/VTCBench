@@ -106,7 +106,7 @@ class APIConnector:
     @retry(
         reraise=True,
         wait=wait_random(1, 20),
-        stop=stop_after_delay(30),
+        stop=stop_after_delay(300),
     )
     async def call_openai_api(
         self,
