@@ -8,10 +8,10 @@ from numpy.random import RandomState
 from tqdm import tqdm
 from tqdm.contrib.concurrent import process_map
 
-from locoxim.args import DataArgs, ModelArgs, RunArgs
-from locoxim.async_evaluate import evaluate
-from locoxim.dataio import NeedleTestConfig, iter_question_items
-from locoxim.dry_evaluate import iter_context_and_images
+from vtcbench.args import DataArgs, ModelArgs, RunArgs
+from vtcbench.async_evaluate import evaluate
+from vtcbench.dataio import NeedleTestConfig, iter_question_items
+from vtcbench.dry_evaluate import iter_context_and_images
 
 __doc__ = """
 This script is the dry-run version of run.py, here we are interested in the data.

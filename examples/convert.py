@@ -4,7 +4,7 @@ import os.path as osp
 import sys
 from typing import TypedDict
 
-from locoxim.dataio import NeedleTestConfig, args_to_dict
+from vtcbench.dataio import NeedleTestConfig, args_to_dict
 
 
 class QA(TypedDict):

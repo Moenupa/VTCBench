@@ -7,7 +7,7 @@ from glob import glob
 import pandas as pd
 from tqdm.contrib.concurrent import process_map
 
-from locoxim.metric import calc_metrics
+from vtcbench.metric import calc_metrics
 
 __doc__ = """
 Collect results from multiple json files and summarize the results by metadata,

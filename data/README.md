@@ -17,7 +17,7 @@ Metrics:
   - $0.5$ with `pred="magic number is 6822442"`, `gt=["1234567", "6822442"]`
   - $0.0$ with `pred="magic number is 1234567"`, `gt=["6822442"]`
 - `ROUGE-L` is computed using [`rouge-score`](https://pypi.org/project/rouge-score), and expects exactly one gt.
-- For details, refer to the implementation: [metrics.py](../src/locoxim/metric.py).
+- For details, refer to the implementation: [metrics.py](../src/vtcbench/metric.py).
 
 ## VTC-Retrieval (RULER)
 

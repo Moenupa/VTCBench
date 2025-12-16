@@ -3,16 +3,14 @@ requires = ["uv_build>=0.9.6,<0.10.0"]
 build-backend = "uv_build"
 
 [project]
-name = "LoCoxim"
+name = "VTCBench"
 version = "0.1.0"
-description = "Add your description here"
+description = "Needle-In-A-Haystack revisited from VLM's Perspective"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
     "httpx",
     "jsonargparse[signatures]>=4.35.0,<4.43.0",
-    "langchain-aws==0.2.9",
-    "langchain-core==0.3.26",
     "openai",
     "tenacity>=9.0.0",
     "tiktoken",
@@ -30,4 +28,6 @@ dependencies = [
 [dependency-groups]
 dev = [
     "pytest>=8.4.2",
+    "openpyxl>=3.1.5",
+    "seaborn>=0.13.2",
 ]

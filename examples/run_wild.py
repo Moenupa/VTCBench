@@ -6,8 +6,8 @@ from numpy.random import RandomState
 from tqdm import tqdm
 from tqdm.contrib.concurrent import process_map
 
-from locoxim.args import ModelArgs, RunArgs
-from locoxim.async_evaluate import evaluate_static
+from vtcbench.args import ModelArgs, RunArgs
+from vtcbench.async_evaluate import evaluate_static
 
 __doc__ = """
 """
