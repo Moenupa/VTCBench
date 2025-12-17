@@ -1,38 +1,72 @@
 # VTCBench: Can Vision-Language Models Understand Long Contexts with Vision-Text Compression?
 
-## Quick Start
+VTCBench is the first comprehensive benchmark specifically designed to evaluate
+ the long-context understanding capabilities of Vision-Language Models (VLMs) 
+ within the Vision-Text Compression (VTC) paradigm.
 
-```sh
-uv venv
-uv sync
-uv run playwright install chromium
-```
+![vtc_pipeline](assets/vtc_pipeline.jpg)
 
-```sh
-# or using pip:
-pip install -e .
-playwright install chromium
-```
+VTC is an emerging framework that converts long texts into dense 2D visual 
+representations (images), achieving token compression ratios of 2-10x 
+compared to standard text tokenization. VTCBench rigorously assesses whether 
+VLMs can actually understand this compressed information or if they are merely
+performing surface-level OCR.
 
-<details><summary>More on playwright...</summary>
+## 🚀 Key Features
 
-This project depends on [DeOCR](https://pypi.org/project/deocr/), which in turn depends on [Playwright](https://pypi.org/project/playwright/) to do text-to-image using a browser.
+- **Three Core Tasks**: Evaluates VLMs across Retrieval, Reasoning, and Memory.
+- **VTCBench-Wild**: A variant designed to simulate real-world visual diversity 
+  (e.g., varying fonts, backgrounds, and layouts)
+- **Two Evaluation Settings**: 
+  - Predefined VTC Ratio: Predetermines the compression ratio (e.g., $r_\texttt{VTC}=2.0$)
+    to compare model intelligence at a standardized information density
+  - Predefined Rendering: Uses a fixed document format (12-pt Helvetica, 96 DPI) 
+    to simulate realistic document processing666.
+- **Extensive Model Coverage**: Benchmarks 13 leading models including GPT-5, 
+  Gemini-2.5 Pro, Gemma, Glyph, Qwen2.5 & Qwen3 & InternVL3.5 series, and more.
 
-Below is a copy of DeOCR's installation instruction. Please follow the instruction from [DeOCR](https://pypi.org/project/deocr/) whenever possible.
+## 📊 Benchmark Tasks
 
-```sh
-pip install deocr[playwright,pymupdf]
-# activate your python environment, then install playwright deps
-playwright install chromium
-```
+![vtcbench_tasks](assets/vtcbench_tasks.jpg)
 
-If you have trouble installing playwright, or have host-switching problems (e.g., slurm), we suggest a hacky fix like this:
+### 1. VTC-Retrieval
 
-```sh
-# put libasound.so.2 file (a fake one is also fine) in $HOME/.local/lib
-# and then export lib path for playwright to find it:
-export LIBRARY_PATH=$LD_LIBRARY_PATH:$HOME/.local/lib
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$HOME/.local/lib
-```
+A visual "Needle-In-A-Haystack" (NIAH) test. It evaluates the model's ability 
+to locate specific "needles" (key-value pairs) embedded within a large "haystack"
+of distractors. Sub-tasks: Single-needle, Multi-keys, Multi-values, and Multi-queries.
 
-</details>
+### 2. VTC-Reasoning
+
+Assesses associative reasoning by minimizing literal overlap between the query 
+and the context. Success requires the model to infer latent associations rather 
+than simple keyword matching.
+
+### 3. VTC-Memory
+
+Evaluates long-term dialogue memory using multi-turn conversations.
+Sub-tasks: Single-hop, Multi-hop, Temporal reasoning, and Open-domain knowledge.
+
+### 4. VTCBench-Wild
+
+A more challenging variant of the above tasks, introducing visual noise and 
+diversity to simulate real-world document conditions.
+
+## 📈 Main Findings
+
+![vtcbench_results](assets/vtcbench_results.jpg)
+
+- **Perception $\neq$ Comprehension**: While many VLMs excel at OCR and simple 
+  retrieval, their performance collapses on reasoning and memory tasks 
+  compared to text-only LLMs.
+- **Length Fragility**: VLM performance degrades significantly as the context 
+  length increases (e.g., from 1k up to 32k tokens).
+- **Parameter Sensitivity**: VTC performance is highly sensitive to font size 
+  and the spatial positioning of information
+
+## 🛠 Usage & Data
+
+Please refer to the [Usage Guide](docs/USAGE.md) for instructions on how to use VTCBench.
+
+## 📄 Citation
+
+[CITATION](CITATION.bib)
