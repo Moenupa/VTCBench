@@ -1,10 +1,28 @@
 # VTCBench: Can Vision-Language Models Understand Long Contexts with Vision-Text Compression?
 
+<div align="center">
+  <a href="https://arxiv.org/abs/2512.15649">
+    <img src="https://img.shields.io/badge/2512.15649-B31B1B?logo=arxiv" alt="Arxiv: 2512.15649" />
+  </a>
+  <a href="https://huggingface.co/datasets/MLLM-CL/VTCBench">
+    <img src="https://img.shields.io/badge/Hugging_Face-orange?logo=huggingface" alt="Hugging Face" />
+  </a>
+  <a href="https://creativecommons.org/licenses/by-nc/4.0/">
+    <img src="https://img.shields.io/badge/CC_BY--NC_4.0-ED592F?logo=creativecommons&logoColor=white" alt="License: CC BY-NC 4.0" />
+  </a>
+  <a href="./CITATION.bib">
+    <img src="https://img.shields.io/badge/CITATION-grey" alt="Citation" />
+  </a>
+</div>
+
 VTCBench is the first comprehensive benchmark specifically designed to evaluate
  the long-context understanding capabilities of Vision-Language Models (VLMs) 
  within the Vision-Text Compression (VTC) paradigm.
 
-![vtc_pipeline](assets/vtc_pipeline.jpg)
+<div align="center">
+  <img width="47%" src="assets/vtc_pipeline.jpg" />
+  <img width="51%" src="assets/vtcbench_tasks.jpg" />
+</div>
 
 VTC is an emerging framework that converts long texts into dense 2D visual 
 representations (images), achieving token compression ratios of 2-10x 
@@ -26,8 +44,6 @@ performing surface-level OCR.
   Gemini-2.5 Pro, Gemma, Glyph, Qwen2.5 & Qwen3 & InternVL3.5 series, and more.
 
 ## 📊 Benchmark Tasks
-
-![vtcbench_tasks](assets/vtcbench_tasks.jpg)
 
 ### 1. VTC-Retrieval
 
@@ -66,7 +82,3 @@ diversity to simulate real-world document conditions.
 ## 🛠 Usage & Data
 
 Please refer to the [Usage Guide](docs/USAGE.md) for instructions on how to use VTCBench.
-
-## 📄 Citation
-
-[CITATION](CITATION.bib)
