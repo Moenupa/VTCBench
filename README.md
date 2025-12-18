@@ -28,121 +28,124 @@ performing surface-level OCR.
 
 ## 🚀 Key Features
 
-- **Three Core Tasks**: Evaluates VLMs across Retrieval, Reasoning, and Memory.
-- **VTCBench-Wild**: A variant designed to simulate real-world visual diversity 
+### Three Core Tasks: Retrieval, Reasoning, and Memory
+
+- **VTC-Retrieval**: A visual "Needle-In-A-Haystack" (NIAH) test. 
+  Requires locating "needles" (key-value pairs) embedded within a large "haystack" of distractors.
+- **VTC-Reasoning**: Tests associative reasoning with minimized literal overlap
+  between query and key, requiring inference of latent associations.
+- **VTC-Memory**: Multi-turn conversations testing long-term memory retention.
+
+### VTCBench-Wild
+
+A wild-version designed to simulate real-world visual diversity 
   (e.g., varying fonts, backgrounds, and layouts)
-- **Two Evaluation Settings**: 
-  - Predefined VTC Ratio: Predetermines the compression ratio (e.g., $r_\texttt{VTC}=2.0$)
-    to compare model intelligence at a standardized information density
-  - Predefined Rendering: Uses a fixed document format (12-pt Helvetica, 96 DPI) 
-    to simulate realistic document processing666.
-- **Extensive Model Coverage**: Benchmarks 13 leading models including GPT-5, 
+
+### Two Evaluation Settings
+
+- Predefined VTC Ratio: Predetermines the compression ratio (e.g., $r_\text{VTC}=2.0$)
+  to compare model intelligence at a standardized information density.
+- Predefined Rendering: Uses a fixed document format (12-pt Helvetica, 96 DPI) 
+  to simulate realistic document processing.
+
+### Extensive Model Coverage
+
+Benchmarks 13 leading models including GPT-5, 
   Gemini-2.5 Pro, Gemma, Glyph, Qwen2.5 & Qwen3 & InternVL3.5 series, and more.
+
+Easily extensible to new models via our server-client evaluation framework.
 
 ## 📊 Benchmark Tasks
 
+<div style="overflow-x: auto;">
 <table>
 <tr>
 <th>Task</th>
 <th>Task Categories</th>
-<th>Task Description</th>
 <th>Context Example</th>
 <th>Evaluation Example</th>
-<th>Visual Text Example</th>
 </tr>
 
 <tr>
 <td>VTC-Retrieval (NIAH)</td>
 <td>Lexical Matching, Multi-Hop Tracing, Aggregation</td>
 <td>
-  A visual "Needle-In-A-Haystack" (NIAH) test. Requires locating specific 
-  "needles" (key-value pairs) embedded within a large "haystack" of distractors.
-  <p>Sub-tasks: Single-needle, Multi-keys, Multi-values, and Multi-queries.</p>
-</td>
-<td>
-  (Dynamic 
-  <span style='color: orange'>query/key</span>-<span style='color: teal'>value</span> 
-  with types: 
-  <span style='color: orange'>word</span>-<span style='color: teal'>word</span>,
-  <span style='color: orange'>word</span>-<span style='color: teal'>number</span>, 
-  <span style='color: orange'>uuid</span>-<span style='color: teal'>number</span>)
-  <div style='color: gray'>(essays...)</div>
-  One of the special magic numbers for 
-  <span style='color: orange'>long-context</span> is: 
-  <span style='color: teal'>2026</span>.
-  <div style='color: grey'>...One of the special magic numbers for distracting-information is: 2025.</div>
+  <sup>
+    Dynamic <b>query/key</b>-<b>value</b> with types: <em>word</em>-<em>word</em>,
+     <em>word</em>-<em>number</em>, <em>uuid</em>-<em>number</em>.
+    <a href="assets/data_samples/ruler_sample.jpeg">visual example</a>
+  </sup>
+  <div style='color: gray'><i>(essays...)</i></div>
+  One of the special magic numbers for <mark>long-context</mark> is: <mark>2026</mark>.
+  <div style='color: gray'>...One of the special magic numbers for distracting-information is: 2025.</div>
 </td>
 <td>
   <div><b>QA Variant:</b></div>
-  <i>Q:</i> What's the special magic number for <span style='color: orange'>long-context</span>?
-  <i>A:</i> <span style='color: teal'>2026</span>.
+  <div><i>Q:</i> What's the special magic number for <mark>long-context</mark>?</div>
+  <div><i>A:</i> <mark>2026</mark>.</div>
   <div><b>Completion Variant:</b></div>
-  <i>Prompt:</i> one of the special magic number for <span style='color: orange'>long-context</span> is:
-  <i>Completion:</i> <span style='color: teal'>2026</span>.
+  <div><i>Prompt:</i> one of the special magic number for <mark>long-context</mark> is:</div>
+  <div><i>Completion:</i> <mark>2026</mark>.</div>
 </td>
-<td><img src="assets/data_samples/ruler_sample.jpeg"/></td>
 </tr>
 
 <tr>
 <td>VTC-Reasoning  (NIAH)</td>
 <td>Associative Reasoning, Question-Answering</td>
 <td>
-  Minimized literal overlap between query and key. 
-  Requires inferring latent associations rather than simple keyword matching.
-</td>
-<td>
-  (Dynamic 
-  <span style='color: orange'>query/key</span>-<span style='color: teal'>value</span> 
-  with types: 
-  <span style='color: orange'>event/action</span>-<span style='color: teal'>person</span>)
-  <div style='color: gray'>(books...)</div>
-  There was a <span style='color: orange'>vegan</span> guest, named <span style='color: teal'>Katie</span>.
+  <sup>
+    Dynamic <b>query/key</b>-<b>value</b> with types: <em>event/action</em>-<em>person</em>.
+    <a href="assets/data_samples/nolima_sample.jpeg">visual example</a>.
+  </sup>
+  <div style='color: gray'><i>(books...)</i></div>
+  <div>There was a <mark>vegan</mark> guest, named <mark>Katie</mark>.</div>
 </td>
 <td>
   <div><b>One-Hop Reasoning:</b></div>
-  <i>Q:</i> Which character cannot eat <span style='color: orange'>fish-based</span> meals?
-  <i>A:</i> <span style='color: teal'>Katie</span>.
+  <div><i>Q:</i> Which character cannot eat <mark>fish-based</mark> meals?</div>
+  <div><i>A:</i> <mark>Katie</mark>.</div>
   <div><b>Two-Hop Reasoning:</b></div>
-  <i>Q:</i> Which character cannot eat <span style='color: orange'>Brandade</span> meals?
-  <i>A:</i> <span style='color: teal'>Katie</span>.
+  <div><i>Q:</i> Which character cannot eat <mark>Brandade</mark> meals?</div>
+  <div><i>A:</i> <mark>Katie</mark>.</div>
 </td>
-<td><img src="assets/data_samples/nolima_sample.jpeg"/></td>
 </tr>
 
 <tr>
 <td>VTC-Memory (QA)</td>
 <td>Memory, Question-Answering</td>
 <td>
-  Multi-turn conversations testing long-term memory.
-  <p>Sub-tasks: Single-hop, Multi-hop, Temporal reasoning, and Open-domain knowledge.</p>
+  <sup>
+    No dynamic <b>query/key</b>-<b>value</b>, fully static.
+    <a href="assets/data_samples/locomo_sample.jpeg">visual example</a>.
+  </sup>
+  <div style='color: gray'><i>(conversations...)</i></div>
+  <div><i>Caroline</i>: <mark>Researching adoption agencies</mark>&mdash;it's
+  been a dream to have a family and give a loving home to kids who need it.</div>
+  
 </td>
 <td>
-  (No dynamic 
-  <span style='color: orange'>query/key</span>-<span style='color: teal'>value</span>,
-  fully static.)
-  <div style='color: gray'>(conversations...)</div>
-  <i style='color: orange'>Caroline</i>: <span style='color: teal'>Researching adoption agencies</span>&mdash;it's
-  been a dream to have a family and give a loving home to kids who need it.
+  <div><i>Q:</i> What did <mark>Caroline</mark> research?</div>
+  <div><i>A:</i> <mark>Adoption agencies</mark>.</div>
 </td>
-<td>
-  <i>Q:</i> What did <span style='color: orange'>Caroline</span> research?
-  <i>A:</i> <span style='color: teal'>Adoption agencies</span>.
+</tr>
+
+<tr>
+<td>VTCBench-Wild</td>
+<td>All of the above</td>
+<td colspan="2">
+  A more challenging variant of the above tasks, introducing visual diversity 
+  to simulate real-world document conditions.
 </td>
-<td><img src="assets/data_samples/locomo_sample.jpeg"/></td>
 </tr>
 
 </table>
-
-### VTCBench-Wild
-
-A more challenging variant of the above tasks, introducing visual noise and 
-diversity to simulate real-world document conditions.
+</div>
 
 ## 📈 Main Findings
 
 ![vtcbench_results](assets/vtcbench_results.jpg)
 
-- **Perception $\neq$ Comprehension**: While many VLMs excel at OCR and simple 
+- **Perception ≠ Comprehension**: While many VLMs excel at OCR and simple 
   retrieval, their performance collapses on reasoning and memory tasks 
   compared to text-only LLMs.
 - **Length Fragility**: VLM performance degrades significantly as the context 
