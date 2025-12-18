@@ -4,21 +4,20 @@ title: Data
 permalink: /data/
 ---
 
-# Data
-
 ## VTCBench-Wild
 
-[![Dataset on HF](https://huggingface.co/datasets/huggingface/badges/resolve/main/dataset-on-hf-md.svg)][hfvtcbench]
+[![Dataset on HF][hfbadge]][hfvtcbench]
 
 Evaluation on a permutation of `dataset × task × formatting` is a huge task.
 
 We hope to simpify it with **VTCBench-Wild**, a static yet wild version of VTCBench, 
-sampling data from diverse datasets, tasks and common document formats.  2.2k dataset
+with 2.2k samples randomly drawn from diverse datasets, tasks and common document formats.
 
 ```sh
 hf download --repo-type dataset MLLM-CL/VTCBench --local-dir data/VTCBench
 ```
 
+[hfbadge]: https://huggingface.co/datasets/huggingface/badges/resolve/main/dataset-on-hf-md.svg
 [hfvtcbench]: https://huggingface.co/datasets/MLLM-CL/VTCBench
 
 ## Dataset Overview
