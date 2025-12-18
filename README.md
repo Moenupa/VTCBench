@@ -1,8 +1,3 @@
----
-layout: home
-title: Home
----
-
 # VTCBench: Can Vision-Language Models Understand Long Contexts with Vision-Text Compression?
 
 <div align="center">
