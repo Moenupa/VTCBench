@@ -7,7 +7,7 @@
     <img src="https://img.shields.io/badge/Hugging_Face-orange?logo=huggingface" alt="Hugging Face" /></a>
   <a href="https://creativecommons.org/licenses/by-nc/4.0/">
     <img src="https://img.shields.io/badge/CC_BY--NC_4.0-ED592F?logo=creativecommons&logoColor=white" alt="License: CC BY-NC 4.0" /></a>
-  <a href="./CITATION.bib">
+  <a href="./CITATION.cff">
     <img src="https://img.shields.io/badge/CITATION-grey" alt="Citation" /></a>
 </div>
 
