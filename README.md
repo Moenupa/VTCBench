@@ -9,11 +9,19 @@ title: Home
   <a href="https://arxiv.org/abs/2512.15649">
     <img src="https://img.shields.io/badge/2512.15649-B31B1B?logo=arxiv" alt="Arxiv: 2512.15649" /></a>
   <a href="https://huggingface.co/datasets/MLLM-CL/VTCBench">
-    <img src="https://img.shields.io/badge/Hugging_Face-orange?logo=huggingface" alt="Hugging Face" /></a>
+    <img src="https://img.shields.io/badge/Hugging_Face-FF8D28?logo=huggingface" alt="Hugging Face" /></a>
+  <a href="https://modelscope.cn/datasets/MLLM-CL/VTCBench">
+    <img src="https://img.shields.io/badge/ModelScope-00AAEE?logo=data:image/svg%2bxml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB2ZXJzaW9uPSIxLjEiIHdpZHRoPSIyNCIgaGVpZ2h0PSIxNCIgdmlld0JveD0iMCAwIDI0IDE0IiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8dGl0bGU+TW9kZWxTY29wZSBCYWRnZTwvdGl0bGU+CjxnIGZpbGw9Im5vbmUiIGZpbGwtcnVsZT0iZXZlbm9kZCI+CjxnIGZpbGwtcnVsZT0ibm9uemVybyI+CjxwYXRoIGQ9Im0wIDIuNjY3aDIuNjY3djIuNjY3aC0yLjY2N3YtMi42Njd6bTggMi42NjZoMi42Njd2Mi42NjdoLTIuNjY3di0yLjY2N3oiIGZpbGw9IiMzNkNFRDAiLz4KPHBhdGggZD0ibTAgNS4zMzNoMi42Njd2Mi42NjdoLTIuNjY3di0yLjY2N3ptMi42NjcgMi42NjdoMi42NjZ2Mi42NjdoMi42Njd2Mi42NjZoLTUuMzMzdi01LjMzM3ptMC04aDUuMzMzdjIuNjY3aC0yLjY2N3YyLjY2NmgtMi42NjZ2LTUuMzMzem04IDhoMi42Njd2Mi42NjdoLTIuNjY3di0yLjY2N3oiIGZpbGw9IiM2MjRBRkYiLz4KPHBhdGggZD0ibTI0IDIuNjY3aC0yLjY2N3YyLjY2N2gyLjY2N3YtMi42Njd6bS04IDIuNjY2aC0yLjY2N3YyLjY2N2gyLjY2N3YtMi42Njd6IiBmaWxsPSIjMzZDRUQwIi8+CjxwYXRoIGQ9Im0yNCA1LjMzM2gtMi42Njd2Mi42NjdoMi42Njd2LTIuNjY3em0tMi42NjcgMi42NjdoLTIuNjY2djIuNjY3aC0yLjY2N3YyLjY2Nmg1LjMzM3YtNS4zMzN6bTAtOGgtNS4zMzN2Mi42NjdoMi42Njd2Mi42NjZoMi42NjZ2LTUuMzMzeiIgZmlsbD0iIzYyNEFGRiIvPgo8L2c+CjwvZz4KPC9zdmc+Cg==" alt="ModelScope" /></a>
   <a href="https://creativecommons.org/licenses/by-nc/4.0/">
     <img src="https://img.shields.io/badge/CC_BY--NC_4.0-ED592F?logo=creativecommons&logoColor=white" alt="License: CC BY-NC 4.0" /></a>
   <a href="./CITATION.cff">
     <img src="https://img.shields.io/badge/CITATION-grey" alt="Citation" /></a>
+</div>
+<div align="center">
+  <a href="https://github.com/Moenupa/VTCBench">
+    <img src="https://img.shields.io/badge/Moenupa/VTCBench-24292E?logo=github" alt="github.com/Moenupa/VTCBench" /></a>
+  <a href="https://github.com/open-compass/VLMEvalKit">
+    <img src="https://img.shields.io/badge/open--compass/VLMEvalKit-24292E?logo=github" alt="github.com/open-compass/VLMEvalKit" /></a>
 </div>
 
 VTCBench is the first comprehensive benchmark specifically designed to evaluate
