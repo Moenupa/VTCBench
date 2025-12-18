@@ -1,14 +1,37 @@
-# Data Preparation
+---
+layout: page
+title: data
+permalink: /data/
+---
+
+# Data
+
+## VTCBench-Wild
+
+[![Dataset on HF](https://huggingface.co/datasets/huggingface/badges/resolve/main/dataset-on-hf-md.svg)][hfvtcbench]
+
+Evaluation on a permutation of `dataset × task × formatting` is a huge task.
+
+We hope to simpify it with **VTCBench-Wild**, a static yet wild version of VTCBench, 
+sampling data from diverse datasets, tasks and common document formats.  2.2k dataset
+
+```sh
+hf download --repo-type dataset MLLM-CL/VTCBench --local-dir data/VTCBench
+```
+
+[hfvtcbench]: https://huggingface.co/datasets/MLLM-CL/VTCBench
+
+## Dataset Overview
 
 |   VTCBench    |       Dataset       |    Metric     |      Needle      |   Haystack    | Evaluated by  |            License             |
 | :-----------: | :-----------------: | :-----------: | :--------------: | :-----------: | :-----------: | :----------------------------: |
-| VTC-Retrieval |  [RULER][gitruler]  |  `contains`   | word/uuid/number |     essay     | Completion/QA |   [Apache-2.0][gitrulerLCS]    |
+| VTC-Retrieval |  [RULER][gitruler]  | `containsAll` | word/uuid/number |     essay     | Completion/QA |   [Apache-2.0][gitrulerLCS]    |
 | VTC-Reasoning | [NoLiMa][gitnolima] | `containsAll` | character/event  |     book      |      QA       | [Adobe Research][gitnolimaLCS] |
 |  VTC-Memory   | [LoCoMo][gitlocomo] |   `ROUGE-L`   |       _NA_       | conversations |      QA       |  [CC BY-NC 4.0][gitlocomoLCS]  |
 
 Metrics:
 
-- `contains` or `containsAny` checks if the prediction is a substring of the (or any one of) ground truth, e.g.:
+- `containsAny` checks if the prediction is a substring of the (or any one of) ground truth, e.g.:
   - $1.0$ with `pred="magic number is 6822442"`, `gt=["6822442"]`
   - $1.0$ with `pred="magic number is 6822442"`, `gt=["1234567", "6822442"]`
   - $0.0$ with `pred="magic number is 1234567"`, `gt=["6822442"]`
@@ -16,7 +39,7 @@ Metrics:
   - $1.0$ with `pred="magic number is 6822442"`, `gt=["6822442"]`
   - $0.5$ with `pred="magic number is 6822442"`, `gt=["1234567", "6822442"]`
   - $0.0$ with `pred="magic number is 1234567"`, `gt=["6822442"]`
-- `ROUGE-L` is computed using [`rouge-score`](https://pypi.org/project/rouge-score), and expects exactly one gt.
+- `ROUGE-L` is computed using [`rouge-score`](https://pypi.org/project/rouge-score).
 - For details, refer to the implementation: [metrics.py](../src/vtcbench/metric.py).
 
 ## VTC-Retrieval (RULER)

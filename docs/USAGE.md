@@ -1,3 +1,9 @@
+---
+layout: page
+title: Usage
+permalink: /usage/
+---
+
 # Usage
 
 This project adopts a server-client architecture. 
@@ -85,7 +91,7 @@ render_css model_id
 ## vLLM Serving
 
 To setup a [vLLM](https://github.com/vllm-project/vllm) serving endpoint, 
-please refer to the [vLLM Serving Documentation][^1].
+please refer to the vLLM Serving Documentation[^1].
 
 A simple example to get you started, using deps from [pyproject.toml](./pyproject.toml):
 

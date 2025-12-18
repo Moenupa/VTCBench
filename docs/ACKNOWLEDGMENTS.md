@@ -1,3 +1,9 @@
+---
+layout: page
+title: Acknowledgments
+permalink: /acknowledgments/
+---
+
 This project builds upon the following datasets.
 Here we include their respective licenses.
 For their usage, please refer to our [data/README.md](../data/README.md).
