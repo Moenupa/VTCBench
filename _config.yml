@@ -2,6 +2,6 @@ title: VTCBench
 description: Can Vision-Language Models Understand Long Contexts with Vision-Text Compression?
 theme: minima
 header_pages:
+  - docs/DATA.md
   - docs/USAGE.md
   - docs/ACKNOWLEDGMENTS.md
-  - docs/DATA.md

@@ -1,10 +1,10 @@
 ---
 layout: page
-title: Usage
-permalink: /usage/
+title: Evaluation
+permalink: /eval/
 ---
 
-# Usage
+# Evaluation Guide
 
 This project adopts a server-client architecture. 
 We require a running OpenAI-compatible LLM/VLM server 
