@@ -152,6 +152,7 @@ Easily extensible to new models via our server-client evaluation framework.
 ## 📈 Main Findings
 
 ![vtcbench_results](assets/vtcbench_results.jpg)
+![vtcbench_results](assets/vtcbench_wild_results.jpg)
 
 - **Perception ≠ Comprehension**: While many VLMs excel at OCR and simple 
   retrieval, their performance collapses on reasoning and memory tasks 
