@@ -2,15 +2,15 @@ import json
 import os
 from glob import iglob
 
+from datasets import Dataset
 from deocr.engine.args import RenderArgs
 from jsonargparse import ArgumentParser
 from numpy.random import RandomState
-from tqdm import tqdm
 from tqdm.contrib.concurrent import process_map
 
 from vtcbench.args import DataArgs, ModelArgs, RunArgs
-from vtcbench.async_evaluate import evaluate
-from vtcbench.dataio import NeedleTestConfig, iter_question_items
+from vtcbench.client.image_helper import image_object_to_bytes
+from vtcbench.dataio import NeedleTestConfig, args_to_dict, iter_question_items
 from vtcbench.dry_evaluate import iter_context_and_images
 
 __doc__ = """
@@ -25,15 +25,28 @@ You can also modify the counting function with some saving or api input smoke te
 """
 
 
-def _img_counter(kwargs):
-    return [
-        (d["_placement_output"]["context_length_wo_needle"], len(d["images"]))
-        for d in iter_context_and_images(**kwargs)
-    ]
-
-
-def _worker(kwargs):
-    evaluate(**kwargs)
+def _worker(kwargs) -> list[dict]:
+    samples: list[dict] = []
+    for result in iter_context_and_images(**kwargs):
+        result = {
+            "problem": result["problem"],
+            "images": [
+                {
+                    "bytes": image_object_to_bytes(
+                        img,
+                        kwargs["render_args"].save_format,
+                        kwargs["render_args"].save_kwargs,
+                    )
+                }
+                for img in result["images"]
+            ],
+            "answers": result["answers"],
+            "_context": result["_context"],
+            "_render_args": json.dumps(args_to_dict(kwargs["render_args"])),
+            "_source": json.dumps(args_to_dict(result["_source"])),
+        }
+        samples.append(result)
+    return samples
 
 
 def run_smoke_test(
@@ -60,24 +73,6 @@ def run_smoke_test(
     ]
 
     tasks: list[dict] = []
-    # alternating_data_args: list[DataArgs] = [
-    #     DataArgs(
-    #         needle_set_path=data_args.needle_set_path,
-    #         haystack_dir=data_args.haystack_dir,
-    #         task_template=data_args.task_template,
-    #         use_default_system_prompt=data_args.use_default_system_prompt,
-    #         # copy all other args, alternate context_length
-    #         context_length=CONTEXT_LEN,
-    #         document_depth_percent_min=data_args.document_depth_percent_min,
-    #         document_depth_percent_max=data_args.document_depth_percent_max,
-    #         document_depth_num_tests=NUM_NEEDLE_POS,
-    #         shift=data_args.shift,
-    #         static_depth=data_args.static_depth,
-    #         pure_text=data_args.pure_text,
-    #     )
-    #     for NUM_NEEDLE_POS in [6, 11]
-    #     for CONTEXT_LEN in [1000, 2000, 4000, 8000, 16000, 32000]
-    # ]
     alternating_render_args: list[RenderArgs] = [
         RenderArgs(
             pagesize=render_args.pagesize,
@@ -109,7 +104,6 @@ def run_smoke_test(
                 {
                     "model_args": model_args,
                     "data_args": data_args,
-                    "run_args": run_args,
                     # below independent stuff
                     "question_item": question_item,
                     "haystack_path": haystack_path,
@@ -122,7 +116,6 @@ def run_smoke_test(
         }
         for t in tasks
         for render_args in alternating_render_args
-        # for data_args in alternating_data_args
     ]
 
     # respect max number of tasks, if valid
@@ -130,22 +123,15 @@ def run_smoke_test(
         rng = RandomState(run_args.base_seed)
         tasks = rng.choice(tasks, size=run_args.num_tasks).tolist()  # type: ignore
 
-    if run_args.num_workers <= 1:
-        with tqdm(total=len(tasks)) as pbar:
-            for task in tasks:
-                pbar.set_postfix(data=task["data_args"], render=task["render_args"])
-                for result in iter_context_and_images(**task):
-                    pass
-                # result = evaluate(**task)
-                pbar.set_postfix(result=result)
-                pbar.update()
-    else:
-        process_map(
-            _worker,
-            tasks,
-            max_workers=run_args.num_workers,
-            chunksize=1,
-        )
+    assert run_args.num_workers > 1
+    samples_2d = process_map(
+        _worker,
+        tasks,
+        max_workers=run_args.num_workers,
+        chunksize=1,
+    )
+    # flatten to 1d
+    Dataset.from_list([e for _l in samples_2d for e in _l]).to_parquet("output.parquet")
 
 
 if __name__ == "__main__":

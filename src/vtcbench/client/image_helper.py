@@ -127,3 +127,27 @@ def adaptive_image_to_data_url(
     raise NotImplementedError(
         f"Unsupported image input {image} with ext {save_format}."
     )
+
+
+def image_object_to_bytes(
+    image_object: PILImage,
+    save_format: str | None,
+    save_kwargs: dict | None = None,
+) -> bytes:
+    """Convert an image object to bytes.
+
+    Args:
+        image_object (PIL.Image.Image): The pillow image object.
+        save_format (str): The image file extension (e.g., "jpeg", "png").
+
+    Returns:
+        bytes: The image bytes.
+    """
+    # special case for jpg -> pillow's jpeg
+    if save_format == "jpg" or save_format is None:
+        save_format = "jpeg"
+
+    with BytesIO() as buffered:
+        image_object.save(buffered, format=save_format.upper(), **(save_kwargs or {}))
+        bs = buffered.getvalue()
+    return bs

@@ -160,7 +160,7 @@ Easily extensible to new models via our server-client evaluation framework.
 - **Length Fragility**: VLM performance degrades significantly as the context 
   length increases (e.g., from 1k up to 32k tokens).
 - **Parameter Sensitivity**: VTC performance is highly sensitive to font size 
-  and the spatial positioning of information
+  and the spatial positioning of information.
 
 ## 🛠 Usage & Data
 
