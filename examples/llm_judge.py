@@ -192,9 +192,8 @@ def folder_to_entries(folder_path: str) -> list[ResultEntry]:
         load_json,
         files,
         max_workers=10,
-        desc="Loading JSON files",
+        desc=f"Loading JSON files from {folder_path}/*/*.json",
     )
-    assert len(entries) > 0, "No JSON files found."
     return entries
 
 
@@ -204,14 +203,19 @@ if __name__ == "__main__":
             print(f"usage: python {sys.argv[0]} <results_folder_for_model> ...")
             continue
 
+        if existing_results := glob(f"{folder_path}/*.json"):
+            print(f"Evaluation skipped: {existing_results}. Remove to re-evaluate.")
+            continue
+
         entries = folder_to_entries(folder_path)
+        if len(entries) == 0:
+            print(f"Skipped {folder_path}: no json files found.")
+            continue
+
         result = process_entries(entries, max_workers=10)
 
-        print(f"correct/total: {result['correct_count']}/{result['total']}")
-        print(f"Acc: {result['accuracy']:.2%}")
-
-        # 保存详细结果到文件
         with open(f"{folder_path}/evaluation_results.json", "w", encoding="utf-8") as f:
             json.dump(result, f, ensure_ascii=False, indent=2)
 
         print(f"-> {folder_path}/evaluation_results.json")
+        print(f"{result['accuracy']:.2%}={result['correct_count']}/{result['total']}")

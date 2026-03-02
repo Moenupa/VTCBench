@@ -1,5 +1,6 @@
 #!/bin/python3
 import json
+import os
 import os.path as osp
 import sys
 from glob import glob
@@ -14,11 +15,16 @@ Collect results from multiple json files and summarize the results by metadata,
 such as VLM model name, data info, render args, shown as a table.
 """
 
+IS_WILD: bool = os.getenv("WILD", "0") == "1"
+
 GROUP_BY_COLS: list[str] = [
     "needle_set_path",
     "model_id",
-    "collection_id",
 ]
+# wild does not need collection_id since it is a dataset-level evaluation
+if not IS_WILD:
+    GROUP_BY_COLS.append("collection_id")
+
 AGG_MAPPING: dict[str, str] = {
     "contains_all": "mean",
     "ROUGE-L": "mean",
@@ -86,7 +92,7 @@ if __name__ == "__main__":
         files,
         max_workers=16,
         chunksize=1,
-        desc="Collecting",
+        desc=f"Collecting {sys.argv[1:]}",
     )
 
     df = pd.DataFrame([item for sublist in results for item in sublist])
