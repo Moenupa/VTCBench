@@ -9,14 +9,14 @@
     <img src="https://img.shields.io/badge/ModelScope-00AAEE?logo=data:image/svg%2bxml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB2ZXJzaW9uPSIxLjEiIHdpZHRoPSIyNCIgaGVpZ2h0PSIxNCIgdmlld0JveD0iMCAwIDI0IDE0IiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8dGl0bGU+TW9kZWxTY29wZSBCYWRnZTwvdGl0bGU+CjxnIGZpbGw9Im5vbmUiIGZpbGwtcnVsZT0iZXZlbm9kZCI+CjxnIGZpbGwtcnVsZT0ibm9uemVybyI+CjxwYXRoIGQ9Im0wIDIuNjY3aDIuNjY3djIuNjY3aC0yLjY2N3YtMi42Njd6bTggMi42NjZoMi42Njd2Mi42NjdoLTIuNjY3di0yLjY2N3oiIGZpbGw9IiMzNkNFRDAiLz4KPHBhdGggZD0ibTAgNS4zMzNoMi42Njd2Mi42NjdoLTIuNjY3di0yLjY2N3ptMi42NjcgMi42NjdoMi42NjZ2Mi42NjdoMi42Njd2Mi42NjZoLTUuMzMzdi01LjMzM3ptMC04aDUuMzMzdjIuNjY3aC0yLjY2N3YyLjY2NmgtMi42NjZ2LTUuMzMzem04IDhoMi42Njd2Mi42NjdoLTIuNjY3di0yLjY2N3oiIGZpbGw9IiM2MjRBRkYiLz4KPHBhdGggZD0ibTI0IDIuNjY3aC0yLjY2N3YyLjY2N2gyLjY2N3YtMi42Njd6bS04IDIuNjY2aC0yLjY2N3YyLjY2N2gyLjY2N3YtMi42Njd6IiBmaWxsPSIjMzZDRUQwIi8+CjxwYXRoIGQ9Im0yNCA1LjMzM2gtMi42Njd2Mi42NjdoMi42Njd2LTIuNjY3em0tMi42NjcgMi42NjdoLTIuNjY2djIuNjY3aC0yLjY2N3YyLjY2Nmg1LjMzM3YtNS4zMzN6bTAtOGgtNS4zMzN2Mi42NjdoMi42Njd2Mi42NjZoMi42NjZ2LTUuMzMzeiIgZmlsbD0iIzYyNEFGRiIvPgo8L2c+CjwvZz4KPC9zdmc+Cg==" alt="ModelScope" /></a>
   <a href="https://creativecommons.org/licenses/by-nc/4.0/">
     <img src="https://img.shields.io/badge/CC_BY--NC_4.0-ED592F?logo=creativecommons&logoColor=white" alt="License: CC BY-NC 4.0" /></a>
-  <a href="./CITATION.cff">
+  <a href="https://github.com/Moenupa/VTCBench/blob/main/CITATION.cff">
     <img src="https://img.shields.io/badge/CITATION-AC7F5E" alt="Citation" /></a>
 </div>
 <p align="center">
   <a href="https://github.com/Moenupa/VTCBench">
     <img src="https://img.shields.io/badge/Moenupa/VTCBench-2B3137?logo=github" alt="github.com/Moenupa/VTCBench" /></a>
-  <a href="https://github.com/bjzhb666/VLMEvalKit">
-    <img src="https://img.shields.io/badge/bjzhb666/VLMEvalKit-2B3137?logo=github" alt="github.com/bjzhb666/VLMEvalKit" /></a>
+  <a href="https://github.com/open-compass/VLMEvalKit">
+    <img src="https://img.shields.io/badge/open--compass/VLMEvalKit-2B3137?logo=github" alt="github.com/open-compass/VLMEvalKit" /></a>
 </p>
 
 VTCBench is the first comprehensive benchmark specifically designed to evaluate
@@ -33,6 +33,25 @@ representations (images), achieving token compression ratios of 2-10x
 compared to standard text tokenization. VTCBench rigorously assesses whether 
 VLMs can actually understand this compressed information or if they are merely
 performing surface-level OCR.
+
+
+## 📈 Main Findings
+
+<figure>
+  <img src="assets/vtcbench_wild_results.jpg" />
+  <figcaption>Performance of 16 VLMs/LLMs on VTCBench-Wild with (hatched) and without (solid) vision-text compression. 
+  Scores are averaged over three tasks: retrieval, associative reasoning, and long-term dialogue memory.
+  Gemini-3-Pro leads on both pure-text and VTC, while other top-tier models maintain high text performance but exhibit lower visual-text capability.</figcaption>
+</figure>
+
+- **Perception ≠ Comprehension**: While many VLMs excel at OCR and simple 
+  retrieval, their performance collapses on reasoning and memory tasks 
+  compared to text-only LLMs.
+- **Length Fragility**: VLM performance degrades significantly as the context 
+  length increases (e.g., from 1k up to 32k tokens).
+- **Parameter Sensitivity**: VTC performance is highly sensitive to font size 
+  and the spatial positioning of information.
+
 
 ## 🚀 Key Features
 
@@ -58,12 +77,13 @@ A wild-version designed to simulate real-world visual diversity
 
 ### Extensive Model Coverage
 
-Benchmarks 13 leading models including GPT-5, 
-  Gemini-2.5 Pro, Gemma, Glyph, Qwen2.5 & Qwen3 & InternVL3.5 series, and more.
+Benchmarks 10+ leading models including GPT-5, 
+  Gemini-3-Pro, Gemma3, Glyph, 
+  Qwen2.5 & Qwen3 & InternVL3.5 series, and more.
 
 Easily extensible to new models via our server-client evaluation framework.
 
-## 📊 Benchmark Tasks
+## 📊 Benchmark Explained by Tasks
 
 <div style="overflow-x: auto;">
 <table>
@@ -148,19 +168,6 @@ Easily extensible to new models via our server-client evaluation framework.
 
 </table>
 </div>
-
-## 📈 Main Findings
-
-![vtcbench_results](assets/vtcbench_results.jpg)
-![vtcbench_results](assets/vtcbench_wild_results.jpg)
-
-- **Perception ≠ Comprehension**: While many VLMs excel at OCR and simple 
-  retrieval, their performance collapses on reasoning and memory tasks 
-  compared to text-only LLMs.
-- **Length Fragility**: VLM performance degrades significantly as the context 
-  length increases (e.g., from 1k up to 32k tokens).
-- **Parameter Sensitivity**: VTC performance is highly sensitive to font size 
-  and the spatial positioning of information.
 
 ## 🛠 Usage & Data
 
