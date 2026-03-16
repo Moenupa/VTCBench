@@ -3,7 +3,7 @@ description: Can Vision-Language Models Understand Long Contexts with Vision-Tex
 theme: minima
 header_pages:
   - docs/DATA.md
-  - docs/USAGE.md
+  - docs/USAGE/README.md
   - docs/ACKNOWLEDGMENTS.md
 plugins:
   - jekyll-redirect-from

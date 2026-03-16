@@ -4,7 +4,7 @@ title: Evaluation
 permalink: /eval/
 redirect_from: 
   - /usage/
-  - /docs/USAGE.md
+  - /docs/USAGE
 ---
 
 # Evaluation Guide

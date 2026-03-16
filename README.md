@@ -171,7 +171,7 @@ Easily extensible to new models via our server-client evaluation framework.
 
 ## 🛠 Usage & Data
 
-Please refer to the [Usage Guide](docs/USAGE.md) for instructions on how to use VTCBench.
+Please refer to the [Usage Guide](docs/USAGE) for instructions on how to use VTCBench.
 
 ## 📄 Citation
 
