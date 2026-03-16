@@ -5,3 +5,5 @@ header_pages:
   - docs/DATA.md
   - docs/USAGE.md
   - docs/ACKNOWLEDGMENTS.md
+plugins:
+  - jekyll-redirect-from
