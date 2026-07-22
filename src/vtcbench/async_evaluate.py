@@ -292,7 +292,8 @@ def evaluate_static(
 
     # format user_prompt as ImageTextPayload
     payload: ImageTextPayload = ImageTextPayload()
-    if pure_text and example["_context"] is not None:
+    if pure_text:
+        assert example["_context"] is not None
         payload.add_text(remove_html_tags(example["_context"]))
     else:
         for each_image in example["images"]:
