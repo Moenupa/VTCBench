@@ -20,13 +20,15 @@ hf download --repo-type dataset MLLM-CL/VTCBench --local-dir data/VTCBench
 [hfbadge]: https://huggingface.co/datasets/huggingface/badges/resolve/main/dataset-on-hf-md.svg
 [hfvtcbench]: https://huggingface.co/datasets/MLLM-CL/VTCBench
 
-## Dataset Overview
+We support VTCBench-Wild evaluation with [VLMEvalKit](https://github.com/open-compass/VLMEvalKit) and [evalscope](https://github.com/modelscope/evalscope).
 
-|   VTCBench    |       Dataset       |    Metric     |      Needle      |   Haystack    | Evaluated by  |            License             |
-| :-----------: | :-----------------: | :-----------: | :--------------: | :-----------: | :-----------: | :----------------------------: |
-| VTC-Retrieval |  [RULER][gitruler]  | `containsAll` | word/uuid/number |     essay     | Completion/QA |   [Apache-2.0][gitrulerLCS]    |
-| VTC-Reasoning | [NoLiMa][gitnolima] | `containsAll` | character/event  |     book      |      QA       | [Adobe Research][gitnolimaLCS] |
-|  VTC-Memory   | [LoCoMo][gitlocomo] |   `ROUGE-L`   |       _NA_       | conversations |      QA       |  [CC BY-NC 4.0][gitlocomoLCS]  |
+## VTCBench Dataset Overview
+
+|   VTCBench    |       Dataset       |   Metric    |          Needle          |   Haystack    |   Evaluated by    |            License             |
+| :-----------: | :-----------------: | :---------: | :----------------------: | :-----------: | :---------------: | :----------------------------: |
+| VTC-Retrieval |  [RULER][gitruler]  | `ROUGE-1-R` | word<br/>uuid<br/>number |     essay     | Completion<br/>QA |   [Apache-2.0][gitrulerLCS]    |
+| VTC-Reasoning | [NoLiMa][gitnolima] | `ROUGE-1-R` |   character<br/>event    |     book      |        QA         | [Adobe Research][gitnolimaLCS] |
+|  VTC-Memory   | [LoCoMo][gitlocomo] |  `ROUGE-L`  |           _NA_           | conversations |        QA         |  [CC BY-NC 4.0][gitlocomoLCS]  |
 
 Metrics:
 
@@ -34,7 +36,7 @@ Metrics:
   - $1.0$ with `pred="magic number is 6822442"`, `gt=["6822442"]`
   - $1.0$ with `pred="magic number is 6822442"`, `gt=["1234567", "6822442"]`
   - $0.0$ with `pred="magic number is 1234567"`, `gt=["6822442"]`
-- `containsAll` checks if the prediction contains all of the ground truths, e.g.:
+- `ROUGE-1-R` or `containsAll` checks if the prediction contains all of the ground truths, e.g.:
   - $1.0$ with `pred="magic number is 6822442"`, `gt=["6822442"]`
   - $0.5$ with `pred="magic number is 6822442"`, `gt=["1234567", "6822442"]`
   - $0.0$ with `pred="magic number is 1234567"`, `gt=["6822442"]`
@@ -91,12 +93,10 @@ wget -P data/LoCoMo https://raw.githubusercontent.com/snap-research/locomo/refs/
 python examples/convert.py data/LoCoMo/locomo10.json
 ```
 
-> [!NOTE]
 > Be aware that LoCoMo does not have haystacks,
 > and context is directly provided in the needle's `context` field.  
-> Random haystack will result in non-relevant context for needles/QAs, simply put:  
-> ❌$M$ haystacks \* $N$ needles/QAs;  
-> ✔️$N$ needles/QAs with their own context.
+> NIAH (RULER, NoLiMa): $M$ haystacks \* $N$ needles/QAs;  
+> LoCoMo: $N$ needles/QAs with their own context.
 
 <details><summary>Optionally, if you have a custom path</summary>
 

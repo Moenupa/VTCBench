@@ -11,7 +11,7 @@ def remove_think_tags(text: str) -> str:
 
 def calc_metrics(
     response: str,
-    gold_answers: list[str],
+    gold_answers: str | list[str],
     metric: list[
         Literal[
             "EM",
@@ -24,9 +24,13 @@ def calc_metrics(
     ]
     | None = None,
 ) -> dict[str, float | int]:
-    assert gold_answers is not None and len(gold_answers) > 0, (
-        "gold_answers is None or empty"
-    )
+    assert gold_answers is not None
+    if isinstance(gold_answers, str):
+        if gold_answers.startswith("[") and gold_answers.endswith("]"):
+            gold_answers = eval(gold_answers)
+        gold_answers = [gold_answers]
+    assert isinstance(gold_answers, list) and len(gold_answers) > 0, "gold_answers is not a list or empty"
+
     # make sure gold answers are stripped strings, not int/float/etc.,
     # otherwise the 'contains' metric may fail
     gold_answers = [str(ans).strip().lower() for ans in gold_answers]

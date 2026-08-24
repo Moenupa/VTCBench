@@ -15,6 +15,8 @@
 <p align="center">
   <a href="https://github.com/Moenupa/VTCBench">
     <img src="https://img.shields.io/badge/Moenupa/VTCBench-2B3137?logo=github" alt="github.com/Moenupa/VTCBench" /></a>
+  <a href="https://github.com/modelscope/evalscope">
+    <img src="https://img.shields.io/badge/modelscope/evalscope-2B3137?logo=github" alt="github.com/modelscope/evalscope" /></a>
   <a href="https://github.com/open-compass/VLMEvalKit">
     <img src="https://img.shields.io/badge/open--compass/VLMEvalKit-2B3137?logo=github" alt="github.com/open-compass/VLMEvalKit" /></a>
 </p>

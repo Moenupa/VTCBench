@@ -9,18 +9,22 @@ redirect_from:
 
 # Evaluation Guide
 
-This project adopts a server-client architecture. 
-We require a running OpenAI-compatible LLM/VLM server 
-(e.g., vLLM Serving[^1], OpenAI API[^2], etc.) 
+We natively support **VTCBench-Wild** evaluation on
+[VLMEvalKit](https://github.com/open-compass/VLMEvalKit)
+and [evalscope](https://github.com/modelscope/evalscope).
+
+This page documents how to evaluate **VTCBench** and **VTCBench-Wild** with our 
+framework. We decouple LLM generation and evaluation, and therefore require an
+OpenAI-compatible LLM/VLM server (e.g., vLLM Serving[^1], OpenAI API[^2], etc.) 
 to provide LLM/VLM inference services.
 
 ## Evaluation Framework (Client)
 
-This repo provides the evaluation framework, i.e. the client side of the project. 
+The git repo provides the evaluation framework, i.e. the client side. 
 To set up the evaluation framework, you can use `uv` (recommended) or `pip`:
 
 ```sh
-uv venv
+git clone https://github.com/Moenupa/VTCBench.git && cd VTCBench
 uv sync
 uv run playwright install chromium
 ```
@@ -31,21 +35,17 @@ pip install -e .
 playwright install chromium
 ```
 
-<details><summary>More on playwright Installation...</summary>
+<details><summary>Troubleshooting Playwright Installation</summary>
 
 This project depends on [DeOCR](https://pypi.org/project/deocr/), which in turn
-depends on [Playwright](https://pypi.org/project/playwright/) to do text-to-image using a browser.
-
-Below is a copy of DeOCR's installation instruction. Please follow instructions 
-from [DeOCR](https://pypi.org/project/deocr/) whenever possible.
+depends on [Playwright](https://pypi.org/project/playwright/) for text-to-image rendering in a browser.
 
 ```sh
 pip install deocr[playwright,pymupdf]
-# activate your python environment, then install playwright deps
 playwright install chromium
 ```
 
-If you have trouble installing playwright, or have host-switching problems (e.g., slurm), we suggest a hacky fix like this:
+If you have trouble installing Playwright, or have host-switching problems (e.g., Slurm), we suggest a hacky fix like this:
 
 ```sh
 # put libasound.so.2 file (a fake one is also fine) in $HOME/.local/lib
@@ -59,7 +59,7 @@ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$HOME/.local/lib
 We provide ready-to-use **shell/slurm scripts** for parallel evaluation in 
 the [`slurm/`](../slurm) folder that are equivalent to the following.
 
-**VTCBench** evaluation:
+### VTCBench
 
 ```sh
 uv run examples/run.py \
@@ -70,10 +70,11 @@ uv run examples/run.py \
   # --run.num_tasks 1 # for smoke test
 ```
 
-**VTCBench-Wild** evaluation:
+### VTCBench-Wild
+
+VTCBench-Wild uses pre-rendered static images, so no rendering or context length parameters are needed.
 
 ```sh
-# no rendering and context length params, because they come from -wild dataset
 uv run examples/run_wild.py \
   --model config/model/qwen_2.5_vl_7b.json \
   --data.path MLLM/VTCBench \
@@ -81,15 +82,40 @@ uv run examples/run_wild.py \
   # --run.num_tasks 1 # for smoke test
 ```
 
-Collect results by running `uv run examples/collect.py results`, or 
-`uv run examples/collect.py /path/to/results/`.
-This will print a table like below:
+**Key arguments:**
+
+| Argument       | Description                                          |
+| -------------- | ---------------------------------------------------- |
+| `--model`      | Path to model config JSON                            |
+| `--data.path`  | Hugging Face dataset path                            |
+| `--data.split` | Dataset split: `Retrieval`, `Reasoning`, or `Memory` |
+
+### Collecting Results
+
+After running evaluations, collect and summarize results:
+
+```sh
+uv run examples/collect.py results
+# or point to a specific directory:
+uv run examples/collect.py /path/to/results/
+```
+
+This aggregates results by model and render settings, producing a table like:
 
 ```
                      contains_all  ROUGE-L  json_id
 render_css model_id                                
            Qwen3-8B         99.38    74.35      800
 ```
+
+**Environment variables for advanced usage:**
+
+| Variable          | Effect                                                         |
+| ----------------- | -------------------------------------------------------------- |
+| `WILD=1`          | Collect VTCBench-Wild results (skips `collection_id` grouping) |
+| `PLOT_TRADEOFF=1` | Generate font-size vs. performance tradeoff plots              |
+| `PLOT_HEATMAP=1`  | Generate depth-vs-context-length heatmaps                      |
+| `PLOT_OUTDIR=fig` | Output directory for plots (default: `fig/`)                   |
 
 ## vLLM Serving
 

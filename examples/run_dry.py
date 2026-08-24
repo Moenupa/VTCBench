@@ -1,5 +1,6 @@
 import json
 import os
+from copy import deepcopy
 from glob import iglob
 
 from datasets import Dataset
@@ -99,16 +100,20 @@ def run_smoke_test(
         for LINEHEIGHT in [1.0, 1.2, 1.5]
     ]
     for haystack_path in iglob(f"{data_args.haystack_dir}/*"):
-        for question_item in questions:
-            tasks.append(
-                {
-                    "model_args": model_args,
-                    "data_args": data_args,
-                    # below independent stuff
-                    "question_item": question_item,
-                    "haystack_path": haystack_path,
-                }
-            )
+        for contextlength in [1000, 2000, 4000, 8000, 16000, 32000]:
+            for question_item in questions:
+                altered_data_args = deepcopy(data_args)
+                altered_data_args.context_length = contextlength
+                tasks.append(
+                    {
+                        "model_args": model_args,
+                        "data_args": altered_data_args,
+                        # below independent stuff
+                        "question_item": question_item,
+                        "haystack_path": haystack_path,
+                    }
+                )
+
     tasks = [
         t
         | {
