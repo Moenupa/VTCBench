@@ -71,7 +71,8 @@ def _safe_columns(df: pd.DataFrame, columns: list[str]) -> list[str]:
 def read_worker(fp: Path) -> list[dict]:
     assert fp.suffix == ".json"
 
-    json_data: dict = json.load(open(fp))
+    with open(fp) as f:
+        json_data: dict = json.load(f)
     results: list[dict] = json_data["results"]
     model_id: str = json_data["model_args"]["model"]
 

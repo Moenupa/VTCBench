@@ -7,7 +7,7 @@
 
 import hashlib
 import os
-from typing import TYPE_CHECKING, Union
+from typing import TYPE_CHECKING
 
 import numpy as np
 
@@ -132,7 +132,7 @@ class BookHaystack:
         shift: int = 0,
         depth: float = 0.5,
         static_depth: float | None = None,
-        distractor: Union[str, None] = None,
+        distractor: str | None = None,
         distractor_free_zone: float = 0.2,
         context: str | None = None,
     ) -> dict:

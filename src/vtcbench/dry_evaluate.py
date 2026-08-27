@@ -1,5 +1,6 @@
 import asyncio
-from typing import TYPE_CHECKING, Generator, TypedDict
+from collections.abc import Generator
+from typing import TYPE_CHECKING, TypedDict
 
 import numpy as np
 from deocr.engine.playwright.async_api import transform as async_transform

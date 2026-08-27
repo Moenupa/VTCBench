@@ -1,5 +1,7 @@
 import re
 
+from bs4 import BeautifulSoup
+
 
 def strip(s: str | None) -> str | None:
     if s is None:
@@ -9,9 +11,22 @@ def strip(s: str | None) -> str | None:
 
 def remove_html_tags(text: str) -> str:
     """Remove HTML tags from a string."""
-    clean = re.compile("<.*?>")
-    duplicated_spaces = re.compile(r"\s+")
-    return re.sub(duplicated_spaces, " ", re.sub(clean, " ", text))
+    if "</span>" not in text:
+        duplicated_spaces = re.compile(r"\s+")
+        return duplicated_spaces.sub(" ", text).strip()
+
+    soup = BeautifulSoup(text, "html.parser")
+    lines = []
+    for span in soup.select('span'):
+        speaker = span.get('data-speaker')
+        text = span.get_text(' ', strip=True)
+        if speaker:
+            lines.append(f'{speaker}: {text}')
+        else:
+            lines.append(text)
+    _context = '\n'.join(lines)
+
+    return _context
 
 
 def has_placeholder(text: str, placeholder: str = "{CHAR}") -> bool:

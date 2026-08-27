@@ -52,7 +52,7 @@ def calc_metrics(
                 scores[each_metric] = int(response in gold_answers)
             case "contains":
                 scores[each_metric] = int(
-                    any([f"{gold_answer}" in response for gold_answer in gold_answers])
+                    any(f"{gold_answer}" in response for gold_answer in gold_answers)
                 )
             case "contains_all":
                 # all gold answers should be contained in the response
@@ -66,10 +66,8 @@ def calc_metrics(
             case "lastline_contains":
                 scores[each_metric] = int(
                     any(
-                        [
-                            gold_answer in response.split("\n")[-1]
-                            for gold_answer in gold_answers
-                        ]
+                        gold_answer in response.split("\n")[-1]
+                        for gold_answer in gold_answers
                     )
                 )
             case "ROUGE-L":

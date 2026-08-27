@@ -17,11 +17,12 @@ dependencies = [
     "datasets[vision]",
     "deocr[playwright,pymupdf]>=0.3.0",
     "rouge-score>=0.1.2",
+    "bs4",
 ]
 
 # for local development
-# [tool.uv.sources]
-# deocr = { path = "../DeOCR", editable = true }
+[tool.uv.sources]
+deocr = { path = "../DeOCR", editable = true }
 
 [dependency-groups]
 dev = [

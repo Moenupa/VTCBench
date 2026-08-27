@@ -8,7 +8,7 @@
 # credit: https://github.com/adobe-research/NoLiMa/blob/main/evaluation/async_api_connector.py
 
 from pprint import pprint
-from typing import TYPE_CHECKING, Literal, Optional, Union
+from typing import TYPE_CHECKING, Literal, Optional
 
 from deocr.engine.playwright.async_api import transform
 from openai import AsyncAzureOpenAI, AsyncOpenAI
@@ -147,12 +147,12 @@ class APIConnector:
             pprint(e)
             print("--------------------------")
             # comment this if you want to skip exceptions
-            raise e
+            raise RuntimeError from e
 
     async def generate_response(
         self,
         system_prompt: str | None,
-        user_prompt: Union[str, ImageTextPayload],
+        user_prompt: str | ImageTextPayload,
         max_tokens: int = 100,
         use_default_system_prompt: bool = True,
         pure_text: bool = True,

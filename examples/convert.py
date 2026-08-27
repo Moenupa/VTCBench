@@ -130,16 +130,17 @@ def prepare_context(conversation: dict[str, str | list[dict[str, str]]]) -> str:
 
 if __name__ == "__main__":
     locomo_path = sys.argv[1]
-    locomo_data: list[LoCoMoFormat] = json.load(open(locomo_path, "r"))
+    with open(locomo_path) as f:
+        locomo_data: list[LoCoMoFormat] = json.load(f)
     dirname = osp.dirname(locomo_path)
 
     needleset_dir = f"{dirname}/needlesets/"
     os.makedirs(needleset_dir, exist_ok=True)
 
-    for category_id in LOCOMO_CATEGORIES.keys():
+    for category_id, category_name in LOCOMO_CATEGORIES.items():
         d = prepare_configs(locomo_data, category_id=category_id)
         out_path = (
-            f"{needleset_dir}/{category_id}_{LOCOMO_CATEGORIES[category_id]}.json"
+            f"{needleset_dir}/{category_id}_{category_name}.json"
         )
         with open(out_path, "w") as f:
             json.dump(d, f, indent="\t")

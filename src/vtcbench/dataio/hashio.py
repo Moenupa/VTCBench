@@ -40,10 +40,7 @@ def get_hash(
 
     if debug:
         for k, v in config_or_data.items():
-            try:
-                json.dumps(v)
-            except TypeError as e:
-                raise e
+            json.dumps({"k": k, "v": v})
 
     json_str = json.dumps(config_or_data, sort_keys=True)
     hash_str = get_hash_str(json_str)
