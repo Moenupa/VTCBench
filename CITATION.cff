@@ -1,5 +1,6 @@
 cff-version: 1.2.0
-message: If you use this software, please cite both the article from preferred-citation and the software itself.
+message: If you use this work, please cite it as below.
+title: 'VTCBench: Can Vision-Language Models Understand Long Contexts with Vision-Text Compression?'
 authors:
   - family-names: Zhao
     given-names: Hongbo
@@ -17,12 +18,11 @@ authors:
     given-names: Gaofeng
   - family-names: Zhang
     given-names: Zhaoxiang
-title: 'VTCBench: Can Vision-Language Models Understand Long Context with Vision-Text Compression?'
-version: 1.0.0
-url: http://arxiv.org/abs/2512.15649
-doi: 10.48550/arXiv.2512.15649
-date-released: '2025-12-18'
+  - family-names: Liu
+    given-names: Cheng-Lin
 preferred-citation:
+  type: conference-paper
+  title: 'VTCBench: Can Vision-Language Models Understand Long Contexts with Vision-Text Compression?'
   authors:
     - family-names: Zhao
       given-names: Hongbo
@@ -40,11 +40,18 @@ preferred-citation:
       given-names: Gaofeng
     - family-names: Zhang
       given-names: Zhaoxiang
-  title: 'VTCBench: Can Vision-Language Models Understand Long Context with Vision-Text Compression?'
-  doi: 10.48550/arXiv.2512.15649
-  url: http://arxiv.org/abs/2512.15649
-  type: generic
-  year: '2025'
-  conference: {}
+    - family-names: Liu
+      given-names: Cheng-Lin
+  conference:
+    name: Proceedings of the 2026 Conference on Empirical Methods in Natural Language Processing
   publisher:
-    name: arXiv
+    name: Association for Computational Linguistics
+    address: Budapest, Hungary
+  start: 3349
+  end: 3379
+  year: 2026
+  month: 10
+  doi: 10.18653/2026.emnlp-main.145
+  url: https://aclanthology.org/2026.emnlp-main.145/
+  isbn: 979-8-89176-459-0
+

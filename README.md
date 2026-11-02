@@ -178,13 +178,29 @@ Please refer to the [Usage Guide](docs/USAGE) for instructions on how to use VTC
 ## 📄 Citation
 
 ```bibtex
-@misc{zhao2025vtcbenchvisionlanguagemodelsunderstand,
-      title={VTCBench: Can Vision-Language Models Understand Long Context with Vision-Text Compression?},
-      author={Hongbo Zhao and Meng Wang and Fei Zhu and Wenzhuo Liu and Bolin Ni and Fanhu Zeng and Gaofeng Meng and Zhaoxiang Zhang},
-      year={2025},
-      eprint={2512.15649},
-      archivePrefix={arXiv},
-      primaryClass={cs.CV},
-      url={https://arxiv.org/abs/2512.15649},
+@inproceedings{zhao-etal-2026-vtcbench,
+    title = "{VTCB}ench: Can Vision-Language Models Understand Long Contexts with Vision-Text Compression?",
+    author = "Zhao, Hongbo  and
+      Wang, Meng  and
+      Zhu, Fei  and
+      Liu, Wenzhuo  and
+      Ni, Bolin  and
+      Zeng, Fanhu  and
+      Meng, Gaofeng  and
+      Zhang, Zhaoxiang  and
+      Liu, Cheng-Lin",
+    editor = "Lee, Hung-Yi  and
+      Dev, Sunipa  and
+      Li, Jessy  and
+      Elliott, Desmond",
+    booktitle = "Proceedings of the 2026 Conference on Empirical Methods in Natural Language Processing",
+    month = oct,
+    year = "2026",
+    address = "Budapest, Hungary",
+    publisher = "Association for Computational Linguistics",
+    url = "https://aclanthology.org/2026.emnlp-main.145/",
+    doi = "10.18653/2026.emnlp-main.145",
+    pages = "3349--3379",
+    ISBN = "979-8-89176-459-0"
 }
 ```
